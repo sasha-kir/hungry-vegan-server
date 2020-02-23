@@ -13,21 +13,24 @@ export const getClientID = (_req: Request, res: Response) => {
 export const getToken = async (req: Request, res: Response) => {
     const { code, redirectUrl }: TokenRequest = req.body;
 
-    const tokenUrl = 'https://foursquare.com/oauth2/access_token';
-
-    const { data, status }: AxiosResponse = await axios.get(tokenUrl, {
-        params: {
-            client_id: process.env.FOURSQUARE_CLIENT_ID,
-            client_secret: process.env.FOURSQUARE_CLIENT_SECRET,
-            grant_type: 'authorization_code',
-            redirect_uri: redirectUrl,
-            code,
-        },
-    });
-
-    if (status !== 200) {
-        return res.status(400).json({ error: 'could not get token' });
+    if (code === undefined || redirectUrl === undefined) {
+        return res.status(400).json({ error: 'missing required params' });
     }
 
-    return res.json({ accessToken: data.access_token });
+    const tokenUrl = 'https://foursquare.com/oauth2/access_token';
+
+    try {
+        const { data }: AxiosResponse = await axios.get(tokenUrl, {
+            params: {
+                client_id: process.env.FOURSQUARE_CLIENT_ID,
+                client_secret: process.env.FOURSQUARE_CLIENT_SECRET,
+                grant_type: 'authorization_code',
+                redirect_uri: redirectUrl,
+                code,
+            },
+        });
+        return res.json({ accessToken: data.access_token });
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
 };

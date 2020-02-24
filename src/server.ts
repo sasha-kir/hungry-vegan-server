@@ -2,16 +2,20 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-// import knex from 'knex';
+//import knex from 'knex';
+import { createPool } from 'slonik';
 
-import * as foursquare from './controllers/foursquare-auth';
+import * as foursquareAuth from './controllers/foursquare-auth';
+import * as foursquareData from './controllers/foursquare-data';
 
 require('dotenv').config();
 
 // const db = knex({
-//   client: 'pg',
-//   connection: process.env.DATABASE_URL,
+//     client: 'pg',
+//     connection: process.env.DATABASE_URL,
 // });
+
+const db = createPool(process.env.DATABASE_URL);
 
 const app = express();
 const port = 5000;
@@ -23,8 +27,9 @@ app.get('/', (_req, res) => {
     res.send('Hungry Vegan API is up and running');
 });
 
-app.get('/foursquare-client-id', foursquare.getClientID);
-app.post('/foursquare-token', foursquare.getToken);
+app.get('/foursquare-client-id', foursquareAuth.getClientID);
+app.post('/foursquare-token', foursquareAuth.getToken(db));
+app.get('/foursquare-lists', foursquareData.getLists(db));
 
 app.listen(port, () => {
     console.log(`Hungry Vegan API is running on port ${port}`);

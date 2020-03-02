@@ -7,6 +7,7 @@ import { createPool } from 'slonik';
 
 import * as foursquareAuth from './controllers/foursquare-auth';
 import * as foursquareData from './controllers/foursquare-data';
+import * as auth from './controllers/auth';
 
 require('dotenv').config();
 
@@ -30,6 +31,9 @@ app.get('/', (_req, res) => {
 app.get('/foursquare-client-id', foursquareAuth.getClientID);
 app.post('/foursquare-token', foursquareAuth.getToken(db));
 app.get('/foursquare-lists', foursquareData.getLists(db));
+
+app.post('/login', auth.handleLogin(db));
+app.post('/hash', auth.hashPass);
 
 app.listen(port, () => {
     console.log(`Hungry Vegan API is running on port ${port}`);

@@ -14,7 +14,7 @@ export const getLists = (db: DatabasePoolType) => async (req: Request, res: Resp
     }
     const decoded = decodeToken(token);
     if (decoded.error || decoded.userId === undefined) {
-        res.status(400).json({ error: 'invalid auth token' });
+        res.status(401).json({ error: 'invalid auth token' });
     }
     const userId: number = decoded.userId!;
     try {

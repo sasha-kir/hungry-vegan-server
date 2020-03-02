@@ -3,16 +3,16 @@
 exports.shorthands = undefined;
 
 exports.up = pgm => {
-    pgm.createTable('access_tokens', {
+    pgm.createTable('users', {
         id: 'id',
-        user_id: {
-            type: 'int',
+        username: {
+            type: 'varchar(100)',
             notNull: true,
-            unique: true,
         },
-        access_token: {
+        email: {
             type: 'varchar(300)',
             notNull: true,
+            unique: true,
         },
         created_at: {
             type: 'timestamp',
@@ -23,9 +23,9 @@ exports.up = pgm => {
             type: 'timestamp',
         },
     });
-    pgm.createIndex('access_tokens', 'user_id');
+    pgm.createIndex('users', 'email');
 };
 
 exports.down = pgm => {
-    pgm.dropTable('access_tokens');
+    pgm.dropTable('users');
 };

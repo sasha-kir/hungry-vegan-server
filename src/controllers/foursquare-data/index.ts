@@ -10,7 +10,7 @@ const cryptus = initCryptus();
 export const getLists = (db: DatabasePoolType) => async (req: Request, res: Response) => {
     const token = req.header('Authentication');
     if (token === undefined) {
-        res.status(400).json({ error: 'missing authentication header' });
+        res.status(401).json({ error: 'missing authentication header' });
     }
     const decoded = decodeToken(token);
     if (decoded.error || decoded.userId === undefined) {
@@ -18,10 +18,13 @@ export const getLists = (db: DatabasePoolType) => async (req: Request, res: Resp
     }
     const userId: number = decoded.userId!;
     try {
-        const tokenSearchResult = await db.one(sql`
+        const tokenSearchResult = await db.maybeOne(sql`
             select access_token from access_tokens 
             where user_id = ${userId}
         `);
+        if (tokenSearchResult === null) {
+            return res.status(400).json({ error: 'user has no foursquare token' });
+        }
         const encryptedToken = tokenSearchResult['access_token'].toString();
         const accessToken = await cryptus.decrypt(process.env.CRYPTUS_KEY, encryptedToken);
 

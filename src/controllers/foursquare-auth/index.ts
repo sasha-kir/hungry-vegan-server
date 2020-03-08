@@ -1,63 +1,55 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Request, Response } from 'express';
 import axios from 'axios';
-import { DatabasePoolType, sql } from 'slonik';
-import { promiseApi as initCryptus } from 'cryptus';
+import { decodeToken } from '../../utils/tokens';
+import { DatabasePoolType } from 'slonik';
 
 import { generateToken } from '../../utils/tokens';
-
-const cryptus = initCryptus();
+import { setTokenByEmail } from '../../utils/foursquare/accessToken';
 
 interface TokenRequest {
     code: string;
     redirectUrl: string;
-    userId: number;
 }
+
+const tokenUrl = 'https://foursquare.com/oauth2/access_token';
 
 export const getClientID = (_req: Request, res: Response) => {
     return res.json({ clientId: process.env.FOURSQUARE_CLIENT_ID });
 };
 
-export const getToken = (db: DatabasePoolType) => async (req: Request, res: Response) => {
-    const { code, redirectUrl, userId }: TokenRequest = req.body;
+//export const foursquareLogin = (db: DatabasePoolType) => async (req: Request, res: Response) => {};
 
-    if (code === undefined || redirectUrl === undefined || userId === undefined) {
+export const foursquareConnect = (db: DatabasePoolType) => async (req: Request, res: Response) => {
+    const token = req.header('Authentication');
+    const { code, redirectUrl }: TokenRequest = req.body;
+    if (token === undefined) {
+        return res.status(401).json({ error: 'missing authentication header' });
+    }
+    if (code === undefined || redirectUrl === undefined) {
         return res.status(400).json({ error: 'missing required params' });
     }
-
-    const tokenUrl = 'https://foursquare.com/oauth2/access_token';
-
+    const decoded = decodeToken(token);
+    if (decoded.error || decoded.email === undefined) {
+        return res.status(401).json({ error: 'invalid auth token' });
+    }
+    const userEmail = decoded['email'] || '';
     try {
-        const tokenSearchResult = await db.maybeOne(sql`
-          select access_token 
-          from access_tokens 
-          where user_id = ${userId}
-        `);
-        if (tokenSearchResult === null) {
-            const { data } = await axios.get(tokenUrl, {
-                params: {
-                    client_id: process.env.FOURSQUARE_CLIENT_ID,
-                    client_secret: process.env.FOURSQUARE_CLIENT_SECRET,
-                    grant_type: 'authorization_code',
-                    redirect_uri: redirectUrl,
-                    code,
-                },
-            });
-            const accessToken = data.access_token;
-            const encryptedToken = await cryptus.encrypt(process.env.CRYPTUS_KEY, accessToken);
-            await db.query(sql`
-              insert into access_tokens (user_id, access_token)
-              values (${userId}, ${encryptedToken})
-          `);
+        const { data: tokenData } = await axios.get(tokenUrl, {
+            params: {
+                client_id: process.env.FOURSQUARE_CLIENT_ID,
+                client_secret: process.env.FOURSQUARE_CLIENT_SECRET,
+                grant_type: 'authorization_code',
+                redirect_uri: redirectUrl,
+                code,
+            },
+        });
+        const accessToken = tokenData.access_token;
+        const trxResult = await setTokenByEmail(db, accessToken, userEmail);
+        if (trxResult.error !== undefined) {
+            return res.status(500).json({ error: trxResult.error });
         }
-        // } else {
-        //     await db.query(sql`
-        //       update access_tokens
-        //       set access_token = ${encryptedToken},
-        //       updated_at = to_timestamp(${Date.now() / 1000})
-        //     `);
-        // }
-        const token = generateToken(userId);
+        const token = generateToken(userEmail);
         return res.json({ token: token });
     } catch (error) {
         return res.status(500).json({ error: error.message });

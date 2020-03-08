@@ -7,11 +7,14 @@ exports.up = pgm => {
         id: 'id',
         username: {
             type: 'varchar(100)',
-            notNull: true,
         },
         email: {
             type: 'varchar(300)',
             notNull: true,
+            unique: true,
+        },
+        foursquare_id: {
+            type: 'int',
             unique: true,
         },
         created_at: {

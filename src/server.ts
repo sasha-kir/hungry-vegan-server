@@ -29,7 +29,8 @@ app.get('/', (_req, res) => {
 });
 
 app.get('/foursquare-client-id', foursquareAuth.getClientID);
-app.post('/foursquare-token', foursquareAuth.getToken(db));
+//app.post('/foursquare-token', foursquareAuth.getToken(db));
+app.post('/foursquare-connect', foursquareAuth.foursquareConnect(db));
 app.get('/foursquare-lists', foursquareData.getLists(db));
 
 app.post('/login', auth.handleLogin(db));

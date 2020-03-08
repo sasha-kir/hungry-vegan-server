@@ -39,7 +39,7 @@ export const handleLogin = (db: DatabasePoolType) => async (req: CustomRequest<L
         }
         const isPassMatching = await bcrypt.compare(password, `${loginRecord.password}`);
         if (isPassMatching) {
-            const token = generateToken(Number(userRecord.id));
+            const token = generateToken(userRecord.email.toString());
             return res.json({ token: token });
         } else {
             return res.status(401).json({ error: 'wrong username or password' });

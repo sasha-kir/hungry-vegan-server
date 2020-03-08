@@ -5,7 +5,7 @@ exports.shorthands = undefined;
 exports.up = pgm => {
     pgm.createTable('access_tokens', {
         id: 'id',
-        user_id: {
+        foursquare_id: {
             type: 'int',
             notNull: true,
             unique: true,
@@ -23,7 +23,7 @@ exports.up = pgm => {
             type: 'timestamp',
         },
     });
-    pgm.createIndex('access_tokens', 'user_id');
+    pgm.createIndex('access_tokens', 'foursquare_id');
 };
 
 exports.down = pgm => {

@@ -2,19 +2,14 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-//import knex from 'knex';
 import { createPool } from 'slonik';
 
 import * as foursquareAuth from './controllers/foursquare-auth';
 import * as foursquareData from './controllers/foursquare-data';
+import * as user from './controllers/user-data';
 import * as auth from './controllers/auth';
 
 require('dotenv').config();
-
-// const db = knex({
-//     client: 'pg',
-//     connection: process.env.DATABASE_URL,
-// });
 
 const db = createPool(process.env.DATABASE_URL);
 
@@ -29,9 +24,12 @@ app.get('/', (_req, res) => {
 });
 
 app.get('/foursquare-client-id', foursquareAuth.getClientID);
-//app.post('/foursquare-token', foursquareAuth.getToken(db));
 app.post('/foursquare-connect', foursquareAuth.foursquareConnect(db));
+app.post('/foursquare-login', foursquareAuth.foursquareLogin(db));
+
 app.get('/foursquare-lists', foursquareData.getLists(db));
+
+app.get('/user_data', user.getUserData(db));
 
 app.post('/login', auth.handleLogin(db));
 app.post('/hash', auth.hashPass);

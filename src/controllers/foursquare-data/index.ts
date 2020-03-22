@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { Request, Response } from 'express';
 import { decodeToken } from '../../utils/tokens';
 import { DatabasePoolType } from 'slonik';

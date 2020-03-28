@@ -97,11 +97,12 @@ export const setTokenWithoutEmail = async (db: DatabasePoolType, accessToken: st
         where foursquare_id = ${foursquareId}
     `);
     if (userWithFoursquareId !== null) {
-        return { email: `${userWithFoursquareId.email}`, isEmailValid: true };
+        const isEmailValid = userWithFoursquareId.email !== String(userWithFoursquareId.foursquare_id);
+        return { email: `${userWithFoursquareId.email}`, isEmailValid };
     }
     const encryptedToken = await encryptToken(accessToken);
     try {
-        db.transaction(async trxConnection => {
+        await db.transaction(async trxConnection => {
             await trxConnection.query(sql`
                 insert into access_tokens (foursquare_id, access_token)
                 values (${foursquareId}, ${encryptedToken})

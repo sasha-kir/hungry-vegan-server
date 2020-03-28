@@ -32,6 +32,7 @@ app.get('/foursquare-lists', foursquareData.getLists(db));
 app.get('/user_data', user.getUserData(db));
 
 app.post('/login', auth.handleLogin(db));
+app.post('/register', auth.handleRegister(db));
 app.post('/hash', auth.hashPass);
 
 app.listen(port, () => {

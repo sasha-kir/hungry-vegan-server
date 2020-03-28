@@ -7,6 +7,7 @@ exports.up = pgm => {
         id: 'id',
         username: {
             type: 'varchar(100)',
+            unique: true,
         },
         email: {
             type: 'varchar(300)',

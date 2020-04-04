@@ -32,7 +32,7 @@ export const updateUserData = (db: DatabasePoolType) => async (req: Request, res
         return res.status(401).json({ error });
     }
     const { username, email } = req.body;
-    if (username === undefined || email === undefined) {
+    if (username === undefined || email === undefined || email === '') {
         return res.status(400).json({ error: 'received invalid user data' });
     }
     try {

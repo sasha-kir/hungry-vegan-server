@@ -7,9 +7,9 @@ import { getUserData } from './foursquareUser';
 const cryptus = initCryptus();
 
 interface SetTokenResponse {
-    email?: string;
+    email: string | null;
     isEmailValid?: boolean;
-    error?: string;
+    error: string | null;
 }
 
 const tokenUrl = 'https://foursquare.com/oauth2/access_token';
@@ -63,11 +63,11 @@ export const setTokenByEmail = async (
     accessToken: string,
     userEmail: string,
 ): Promise<SetTokenResponse> => {
-    const userData = await getUserData(accessToken);
-    if (userData.error !== undefined) {
-        return { error: userData.error };
+    const { user, error } = await getUserData(accessToken);
+    if (error !== null || user === null) {
+        return { email: null, error: error };
     }
-    const foursquareId = Number(userData.data.user.id);
+    const foursquareId = Number(user.id);
     const encryptedToken = await encryptToken(accessToken);
     try {
         await db.transaction(async trxConnection => {
@@ -80,25 +80,25 @@ export const setTokenByEmail = async (
                 where email = ${userEmail}
             `);
         });
-        return {};
+        return { email: userEmail, error: null };
     } catch (error) {
-        return { error: error.message };
+        return { email: null, error: error.message };
     }
 };
 
 export const setTokenWithoutEmail = async (db: DatabasePoolType, accessToken: string): Promise<SetTokenResponse> => {
-    const userData = await getUserData(accessToken);
-    if (userData.error !== undefined) {
-        return { error: userData.error };
+    const { user, error } = await getUserData(accessToken);
+    if (error !== null || user === null) {
+        return { email: null, error: error };
     }
-    const foursquareId = Number(userData.data.user.id);
+    const foursquareId = Number(user.id);
     const userWithFoursquareId = await db.maybeOne(sql`
         select * from users 
         where foursquare_id = ${foursquareId}
     `);
     if (userWithFoursquareId !== null) {
         const isEmailValid = userWithFoursquareId.email !== String(userWithFoursquareId.foursquare_id);
-        return { email: `${userWithFoursquareId.email}`, isEmailValid };
+        return { email: `${userWithFoursquareId.email}`, isEmailValid, error: null };
     }
     const encryptedToken = await encryptToken(accessToken);
     try {
@@ -112,8 +112,8 @@ export const setTokenWithoutEmail = async (db: DatabasePoolType, accessToken: st
                 values (${foursquareId}, ${foursquareId})
             `);
         });
-        return { email: `${foursquareId}`, isEmailValid: false };
+        return { email: `${foursquareId}`, isEmailValid: false, error: null };
     } catch (error) {
-        return { error: error.message };
+        return { email: null, error: error.message };
     }
 };

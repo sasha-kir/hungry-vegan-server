@@ -3,7 +3,30 @@ import axios from 'axios';
 
 const foursquareUrl = 'https://api.foursquare.com/v2/users/self/';
 
-export const getUserData = async (accessToken: string, path = '', params = {}) => {
+interface FsqUserLists {
+    count: number;
+    items: object[];
+}
+
+interface FsqUser {
+    id: string;
+    firstName: string;
+    birthday: number;
+    homeCity: string;
+    lists: FsqUserLists;
+}
+
+interface FsqUserData {
+    user: FsqUser | null;
+    error: string | null;
+}
+
+interface FsqUserListsData {
+    data: FsqUserLists | null;
+    error: string | null;
+}
+
+export const getUserData = async (accessToken: string, path = '', params = {}): Promise<FsqUserData> => {
     const url = foursquareUrl + path;
     try {
         const { data } = await axios.get(url, {
@@ -13,12 +36,16 @@ export const getUserData = async (accessToken: string, path = '', params = {}) =
                 v: '20200220',
             },
         });
-        return { data: data.response };
+        return { user: data.response, error: null };
     } catch (error) {
-        return { error: error.message };
+        return { user: null, error: error.message };
     }
 };
 
-export const getUserLists = async (accessToken: string) => {
-    return getUserData(accessToken, 'lists', { group: 'created' });
+export const getUserLists = async (accessToken: string): Promise<FsqUserListsData> => {
+    const { user, error } = await getUserData(accessToken, 'lists', { group: 'created' });
+    if (error !== null || user === null) {
+        return { data: null, error: error };
+    }
+    return { data: user.lists, error: null };
 };

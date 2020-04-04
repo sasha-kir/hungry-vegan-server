@@ -27,6 +27,7 @@ app.post('/foursquare-connect', foursquareAuth.foursquareConnect(db));
 app.post('/foursquare-login', foursquareAuth.foursquareLogin(db));
 
 app.get('/foursquare-lists', foursquareData.getLists(db));
+app.post('/lists', foursquareData.getAllLists);
 
 app.get('/user_data', user.getUserData(db));
 app.post('/update_user', user.updateUserData(db));

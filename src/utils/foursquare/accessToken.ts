@@ -70,7 +70,7 @@ export const setTokenByEmail = async (
     const foursquareId = Number(userData.data.user.id);
     const encryptedToken = await encryptToken(accessToken);
     try {
-        db.transaction(async trxConnection => {
+        await db.transaction(async trxConnection => {
             await trxConnection.query(sql`
                 insert into access_tokens (foursquare_id, access_token)
                 values (${foursquareId}, ${encryptedToken})

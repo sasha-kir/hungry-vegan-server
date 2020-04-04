@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { DatabasePoolType, sql } from 'slonik';
 
-import { generateToken } from '../../utils/tokens';
+import { generateToken } from '../../utils/jwt/tokens';
 
 const saltRounds = 10;
 

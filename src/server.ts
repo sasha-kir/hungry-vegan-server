@@ -23,13 +23,13 @@ app.get('/', (_req, res) => {
     res.send('Hungry Vegan API is up and running');
 });
 
-app.get('/foursquare-client-id', foursquareAuth.getClientID);
 app.post('/foursquare-connect', foursquareAuth.foursquareConnect(db));
 app.post('/foursquare-login', foursquareAuth.foursquareLogin(db));
 
 app.get('/foursquare-lists', foursquareData.getLists(db));
 
 app.get('/user_data', user.getUserData(db));
+app.post('/update_user', user.updateUserData(db));
 
 app.post('/login', auth.handleLogin(db));
 app.post('/register', auth.handleRegister(db));

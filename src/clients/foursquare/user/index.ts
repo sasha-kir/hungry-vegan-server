@@ -6,6 +6,7 @@ import { foursquareApi } from '..';
 const normalizeUser = (fullUser: FsqApiUser): FsqUser => ({
     id: fullUser.id,
     firstName: fullUser.firstName,
+    lastName: fullUser.lastName,
     birthday: fullUser.birthday,
     homeCity: fullUser.homeCity,
 });
@@ -19,23 +20,17 @@ const normalizeList = (list: FsqApiList): FsqList => ({
     itemsCount: list.listItems.count,
 });
 
-export const getUserData = async (
-    accessToken: string,
-    includeLists = false,
-    params = {},
-): Promise<FsqUserData> => {
-    const url = `users/self/${includeLists ? 'lists' : ''}`;
+export const getUserData = async (accessToken: string): Promise<FsqUserData> => {
+    const url = 'users/self/';
     try {
         const { data } = await foursquareApi.get(url, {
             params: {
-                ...params,
                 oauth_token: accessToken,
                 v: '20200220',
             },
         });
-        const fullUser: FsqApiUser = data.response as FsqApiUser;
+        const fullUser: FsqApiUser = data.response.user as FsqApiUser;
         const foursquareUser: FsqUser = normalizeUser(fullUser);
-        if (includeLists) foursquareUser.userLists = fullUser.lists.items;
         return { user: foursquareUser, error: null };
     } catch (error) {
         return { user: null, error: error.message };
@@ -43,13 +38,19 @@ export const getUserData = async (
 };
 
 export const getUserLists = async (accessToken: string): Promise<FsqUserListsData> => {
-    const { user, error } = await getUserData(accessToken, true, {
-        group: 'created',
-    });
-    if (error !== null || user === null || user.userLists === undefined) {
-        return { data: null, error: error };
+    const url = 'users/self/lists';
+    try {
+        const { data } = await foursquareApi.get(url, {
+            params: {
+                group: 'created',
+                oauth_token: accessToken,
+                v: '20200220',
+            },
+        });
+        const userLists: FsqApiList[] = data.response.lists.items as FsqApiList[];
+        const listsInfo: FsqList[] = userLists.map(list => normalizeList(list));
+        return { data: listsInfo, error: null };
+    } catch (error) {
+        return { data: null, error: error.message };
     }
-    const userLists: FsqApiList[] = user.userLists as FsqApiList[];
-    const listsInfo: FsqList[] = userLists.map(list => normalizeList(list));
-    return { data: listsInfo, error: null };
 };

@@ -13,7 +13,7 @@ export interface FsqListItem {
     addedAt: number;
     location: FsqVenueLocation;
 }
-s;
+
 export interface FsqList extends Partial<FsqApiList> {
     itemsCount: number;
     items?: FsqListItem[];

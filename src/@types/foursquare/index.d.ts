@@ -42,6 +42,7 @@ export interface FsqApiUserLists {
 export interface FsqApiUser {
     id: string;
     firstName: string;
+    lastName: string;
     birthday: number;
     homeCity: string;
     lists: FsqApiUserLists;

@@ -1,4 +1,4 @@
-import { FsqApiUser, FsqApiList, FsqApiVenueLocation } from './foursquareApi';
+import { FsqApiUser, FsqApiList, FsqApiVenueLocation } from 'foursquare';
 
 type Coordinates = { latitude: number; longitude: number };
 
@@ -13,7 +13,7 @@ export interface FsqListItem {
     addedAt: number;
     location: FsqVenueLocation;
 }
-
+s;
 export interface FsqList extends Partial<FsqApiList> {
     itemsCount: number;
     items?: FsqListItem[];

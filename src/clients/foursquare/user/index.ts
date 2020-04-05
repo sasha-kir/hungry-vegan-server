@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { FsqApiUser, FsqApiList } from '../models/foursquareApi';
-import { FsqUserData, FsqUserListsData, FsqUser, FsqList } from '../models/internal';
+import { FsqApiUser, FsqApiList } from 'foursquare';
+import { FsqUserData, FsqUserListsData, FsqUser, FsqList } from '../types';
 import { foursquareApi } from '..';
 
 const normalizeUser = (fullUser: FsqApiUser): FsqUser => ({

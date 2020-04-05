@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { FsqApiList, FsqApiVenueLocation, FsqApiListItem } from '../models/foursquareApi';
-import { FsqListData, FsqList, FsqListItem, FsqVenueLocation } from '../models/internal';
+import { FsqApiList, FsqApiVenueLocation, FsqApiListItem } from 'foursquare';
+import { FsqListData, FsqList, FsqListItem, FsqVenueLocation } from '../types';
 import { foursquareApi } from '..';
 
 const normalizeLocation = (location: FsqApiVenueLocation): FsqVenueLocation => ({

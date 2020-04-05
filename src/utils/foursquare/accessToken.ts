@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { DatabasePoolType, sql } from 'slonik';
 import { promiseApi as initCryptus } from 'cryptus';
-import { getUserData } from './foursquareUser';
+import { getUserData } from '../../clients/foursquare';
 
 const cryptus = initCryptus();
 
@@ -35,7 +35,10 @@ const decryptToken = async (encryptedToken: string): Promise<string> => {
     return await cryptus.decrypt(process.env.CRYPTUS_KEY, encryptedToken);
 };
 
-export const getTokenByEmail = async (db: DatabasePoolType, userEmail: string): Promise<string | null> => {
+export const getTokenByEmail = async (
+    db: DatabasePoolType,
+    userEmail: string,
+): Promise<string | null> => {
     const foursquareIdResult = await db.maybeOne(sql`
         select foursquare_id from users
         where email = ${userEmail}
@@ -86,7 +89,10 @@ export const setTokenByEmail = async (
     }
 };
 
-export const setTokenWithoutEmail = async (db: DatabasePoolType, accessToken: string): Promise<SetTokenResponse> => {
+export const setTokenWithoutEmail = async (
+    db: DatabasePoolType,
+    accessToken: string,
+): Promise<SetTokenResponse> => {
     const { user, error } = await getUserData(accessToken);
     if (error !== null || user === null) {
         return { email: null, error: error };
@@ -97,7 +103,8 @@ export const setTokenWithoutEmail = async (db: DatabasePoolType, accessToken: st
         where foursquare_id = ${foursquareId}
     `);
     if (userWithFoursquareId !== null) {
-        const isEmailValid = userWithFoursquareId.email !== String(userWithFoursquareId.foursquare_id);
+        const isEmailValid =
+            userWithFoursquareId.email !== String(userWithFoursquareId.foursquare_id);
         return { email: `${userWithFoursquareId.email}`, isEmailValid, error: null };
     }
     const encryptedToken = await encryptToken(accessToken);

@@ -14,6 +14,10 @@ interface TokenRequest {
     redirectUrl: string;
 }
 
+export const getClientID = (_req: Request, res: Response) => {
+    return res.json({ clientId: process.env.FOURSQUARE_CLIENT_ID });
+};
+
 export const foursquareLogin = (db: DatabasePoolType) => async (req: Request, res: Response) => {
     const { code, redirectUrl }: TokenRequest = req.body;
     if (code === undefined || redirectUrl === undefined) {

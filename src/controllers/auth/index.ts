@@ -19,7 +19,10 @@ interface RegisterPayload extends LoginPayload {
     email: string;
 }
 
-export const handleLogin = (db: DatabasePoolType) => async (req: CustomRequest<LoginPayload>, res: Response) => {
+export const handleLogin = (db: DatabasePoolType) => async (
+    req: CustomRequest<LoginPayload>,
+    res: Response,
+) => {
     const { username, password } = req.body;
     if (username === undefined || password === undefined) {
         return res.status(400).json({ error: 'missing required fields in request' });
@@ -53,7 +56,10 @@ export const handleLogin = (db: DatabasePoolType) => async (req: CustomRequest<L
     }
 };
 
-export const handleRegister = (db: DatabasePoolType) => async (req: CustomRequest<RegisterPayload>, res: Response) => {
+export const handleRegister = (db: DatabasePoolType) => async (
+    req: CustomRequest<RegisterPayload>,
+    res: Response,
+) => {
     const { username, email, password } = req.body;
     if (username === undefined || email === undefined || password === undefined) {
         return res.status(400).json({ error: 'missing required fields in request' });

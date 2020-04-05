@@ -9,7 +9,10 @@ export const generateToken = (email: string): string => {
     const payload = {
         email,
     };
-    const token = jwt.sign(payload, process.env.JWT_KEY, { algorithm: 'HS256', expiresIn: '1 day' });
+    const token = jwt.sign(payload, process.env.JWT_KEY, {
+        algorithm: 'HS256',
+        expiresIn: '1 day',
+    });
     return token;
 };
 

@@ -1,25 +1,12 @@
-import bcrypt from 'bcrypt';
 import request from 'supertest';
-import { sql } from 'slonik';
-import app, { db, server } from '../server';
+import app, { server } from '../server';
+import { prepareTestUser } from './setup';
 
-const testUsername = 'test';
-const testEmail = 'test@example.com';
-const testPass = 'test';
+let user;
 
 describe('Auth endpoints', () => {
     beforeAll(async () => {
-        const hash = await bcrypt.hash(testPass, 10);
-        await db.transaction(async trxConnection => {
-            await trxConnection.query(sql`
-                insert into users (username, email)
-                values (${testUsername}, ${testEmail})
-            `);
-            await trxConnection.query(sql`
-                insert into login (email, password)
-                values (${testEmail}, ${hash})
-            `);
-        });
+        user = await prepareTestUser('auth');
     });
 
     afterAll(() => {
@@ -30,10 +17,10 @@ describe('Auth endpoints', () => {
         const response = await request(app)
             .post('/login')
             .send({
-                username: testUsername,
-                password: testPass,
+                username: user.username,
+                password: user.password,
             });
-        expect(response.status).toEqual(200);
+        expect(response.ok).toBe(true);
         expect(response.body).toHaveProperty('token');
     });
 
@@ -42,7 +29,7 @@ describe('Auth endpoints', () => {
             .post('/login')
             .send({
                 username: 'fake',
-                password: testPass,
+                password: user.password,
             });
         expect(response.unauthorized).toBe(true);
         expect(response.body).toHaveProperty('error');
@@ -52,7 +39,7 @@ describe('Auth endpoints', () => {
         const response = await request(app)
             .post('/login')
             .send({
-                username: testUsername,
+                username: user.username,
                 password: 'fake',
             });
         expect(response.unauthorized).toBe(true);
@@ -67,7 +54,7 @@ describe('Auth endpoints', () => {
                 email: 'test2@example.com',
                 password: 'test',
             });
-        expect(response.status).toEqual(200);
+        expect(response.ok).toBe(true);
         expect(response.body).toHaveProperty('token');
     });
 
@@ -76,7 +63,7 @@ describe('Auth endpoints', () => {
             .post('/register')
             .send({
                 username: 'test3',
-                email: testEmail,
+                email: user.email,
                 password: 'test',
             });
         expect(response.badRequest).toBe(true);
@@ -87,7 +74,7 @@ describe('Auth endpoints', () => {
         const response = await request(app)
             .post('/register')
             .send({
-                username: testUsername,
+                username: user.username,
                 email: 'test3@example.com',
                 password: 'test',
             });

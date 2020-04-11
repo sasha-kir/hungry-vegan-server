@@ -1,17 +1,13 @@
 import request from 'supertest';
-import app, { server } from '../server';
-import { prepareTestUser } from './setup';
-import * as tokenUtils from '../utils/foursquare/accessToken';
+import app, { server } from '../../server';
+import { prepareTestUser } from '../setup';
+import * as tokenUtils from '../../utils/foursquare/accessToken';
 
 let user;
 
 describe('Foursquare auth endpoints', () => {
     beforeAll(async () => {
         user = await prepareTestUser('fsq-auth');
-    });
-
-    afterEach(() => {
-        jest.clearAllMocks();
     });
 
     afterAll(() => {
@@ -27,9 +23,9 @@ describe('Foursquare auth endpoints', () => {
 
     it('should complete login on foursquare', async () => {
         const mockAquireToken = jest.spyOn(tokenUtils, 'aquireToken');
-        mockAquireToken.mockResolvedValue('test');
+        mockAquireToken.mockResolvedValueOnce('test');
         const mockSetToken = jest.spyOn(tokenUtils, 'setTokenWithoutEmail');
-        mockSetToken.mockResolvedValue({
+        mockSetToken.mockResolvedValueOnce({
             error: null,
             email: 'test',
         });
@@ -41,7 +37,7 @@ describe('Foursquare auth endpoints', () => {
             });
         expect(mockAquireToken).toHaveBeenCalledWith('code', 'url');
         expect(mockSetToken).toHaveBeenCalled();
-        expect(response.status).toEqual(200);
+        expect(response.ok).toBeTrue();
         expect(response.body).toHaveProperty('token');
         expect(response.body).toHaveProperty('isEmailValid');
         expect(response.body.token).toBeString();
@@ -49,10 +45,11 @@ describe('Foursquare auth endpoints', () => {
     });
 
     it('should connect existing user to foursquare', async () => {
+        const testData = { code: 'code', url: 'url' };
         const mockAquireToken = jest.spyOn(tokenUtils, 'aquireToken');
-        mockAquireToken.mockResolvedValue('test');
+        mockAquireToken.mockResolvedValueOnce('test');
         const mockSetToken = jest.spyOn(tokenUtils, 'setTokenByEmail');
-        mockSetToken.mockResolvedValue({
+        mockSetToken.mockResolvedValueOnce({
             error: null,
             email: user.email,
         });
@@ -60,12 +57,12 @@ describe('Foursquare auth endpoints', () => {
             .post('/foursquare-connect')
             .set('Authentication', user.token)
             .send({
-                code: 'code',
-                redirectUrl: 'url',
+                code: testData.code,
+                redirectUrl: testData.url,
             });
-        expect(mockAquireToken).toHaveBeenCalledWith('code', 'url');
+        expect(mockAquireToken).toHaveBeenCalledWith(testData.code, testData.url);
         expect(mockSetToken).toHaveBeenCalled();
-        expect(response.status).toEqual(200);
+        expect(response.ok).toBeTrue();
         expect(response.body).toHaveProperty('token');
         expect(response.body.token).toBeString();
     });

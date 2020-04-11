@@ -1,6 +1,6 @@
 import request from 'supertest';
-import app, { server } from '../server';
-import { prepareTestUser } from './setup';
+import app, { server } from '../../server';
+import { prepareTestUser } from '../setup';
 
 const userDataKeys: string[] = ['id', 'username', 'email', 'foursquareId'];
 let user;

@@ -7,7 +7,7 @@ import { getTokenByEmail } from '../../utils/foursquare/accessToken';
 export const getLists = (db: DatabasePoolType) => async (req: Request, res: Response) => {
     const { email, error: tokenError } = checkToken(req.header('Authentication'));
     if (tokenError !== null || email === null) {
-        return res.status(401).json({ tokenError });
+        return res.status(401).json({ error: tokenError });
     }
     const accessToken = await getTokenByEmail(db, email);
     if (accessToken === null) {
@@ -23,7 +23,7 @@ export const getLists = (db: DatabasePoolType) => async (req: Request, res: Resp
 export const getListById = (db: DatabasePoolType) => async (req: Request, res: Response) => {
     const { email, error: tokenError } = checkToken(req.header('Authentication'));
     if (tokenError !== null || email === null) {
-        return res.status(401).json({ tokenError });
+        return res.status(401).json({ error: tokenError });
     }
     const accessToken = await getTokenByEmail(db, email);
     if (accessToken === null) {

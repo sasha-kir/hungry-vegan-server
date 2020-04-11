@@ -22,6 +22,7 @@ describe('Auth endpoints', () => {
             });
         expect(response.ok).toBeTrue();
         expect(response.body).toHaveProperty('token');
+        expect(response.body.token).toBeString();
     });
 
     it('should not allow to login with wrong username', async () => {
@@ -56,6 +57,7 @@ describe('Auth endpoints', () => {
             });
         expect(response.ok).toBeTrue();
         expect(response.body).toHaveProperty('token');
+        expect(response.body.token).toBeString();
     });
 
     it('should not allow to register with same email', async () => {

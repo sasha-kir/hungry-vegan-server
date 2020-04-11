@@ -38,8 +38,6 @@ app.post('/login', auth.handleLogin(db));
 app.post('/register', auth.handleRegister(db));
 app.post('/hash', auth.hashPass);
 
-export const server = app.listen(port, () => {
-    console.log(`Hungry Vegan API is running on port ${port}`);
-});
+export const server = app.listen(port);
 
 export default app;

@@ -46,6 +46,7 @@ describe('User endpoints', () => {
         expect(response.body.user.username).toEqual(user.username);
         expect(response.body.user.email).toEqual(newEmail);
         expect(response.body).toHaveProperty('token');
+        expect(response.body.token).toBeString();
     });
 
     it('should not update user data without authorization', async () => {

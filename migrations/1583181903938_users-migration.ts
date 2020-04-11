@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/camelcase */
+import { MigrationBuilder, ColumnDefinitions } from 'node-pg-migrate';
 
-exports.shorthands = undefined;
+export const shorthands: ColumnDefinitions | undefined = undefined;
 
-exports.up = pgm => {
+export async function up(pgm: MigrationBuilder): Promise<void> {
     pgm.createTable('users', {
         id: 'id',
         username: {
@@ -28,8 +29,8 @@ exports.up = pgm => {
         },
     });
     pgm.createIndex('users', 'email');
-};
+}
 
-exports.down = pgm => {
+export async function down(pgm: MigrationBuilder): Promise<void> {
     pgm.dropTable('users');
-};
+}

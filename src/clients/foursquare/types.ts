@@ -19,9 +19,7 @@ export interface FsqList extends Partial<FsqApiList> {
     items?: FsqListItem[];
 }
 
-export interface FsqUser extends Partial<FsqApiUser> {
-    userLists?: FsqApiList[];
-}
+export type FsqUser = Partial<FsqApiUser>;
 
 export interface FsqListData {
     data: FsqList | null;

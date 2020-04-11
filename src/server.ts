@@ -4,14 +4,15 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import { createPool } from 'slonik';
 
+import config from '../config';
+
 import * as foursquareAuth from './controllers/foursquare-auth';
 import * as foursquareData from './controllers/foursquare-data';
 import * as user from './controllers/user-data';
 import * as auth from './controllers/auth';
 
-require('dotenv').config();
-
-const db = createPool(process.env.DATABASE_URL);
+const env = process.env.NODE_ENV || 'dev';
+export const db = createPool(config[env].database);
 
 const app = express();
 const port = 5000;
@@ -37,6 +38,8 @@ app.post('/login', auth.handleLogin(db));
 app.post('/register', auth.handleRegister(db));
 app.post('/hash', auth.hashPass);
 
-app.listen(port, () => {
+export const server = app.listen(port, () => {
     console.log(`Hungry Vegan API is running on port ${port}`);
 });
+
+export default app;

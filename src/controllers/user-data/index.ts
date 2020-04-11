@@ -2,7 +2,14 @@ import { Request, Response } from 'express';
 import { checkToken, generateToken } from '../../utils/jwt/tokens';
 import { DatabasePoolType, sql } from 'slonik';
 
-const buildUser = userInfo => {
+interface UserInfo {
+    id: string | number;
+    username: string;
+    email: string;
+    foursquareId: string | number;
+}
+
+const buildUser = (userInfo): UserInfo => {
     return {
         id: userInfo.id,
         username: userInfo.username || '',

@@ -20,7 +20,7 @@ describe('Auth endpoints', () => {
                 username: user.username,
                 password: user.password,
             });
-        expect(response.ok).toBe(true);
+        expect(response.ok).toBeTrue();
         expect(response.body).toHaveProperty('token');
     });
 
@@ -31,7 +31,7 @@ describe('Auth endpoints', () => {
                 username: 'fake',
                 password: user.password,
             });
-        expect(response.unauthorized).toBe(true);
+        expect(response.unauthorized).toBeTrue();
         expect(response.body).toHaveProperty('error');
     });
 
@@ -42,7 +42,7 @@ describe('Auth endpoints', () => {
                 username: user.username,
                 password: 'fake',
             });
-        expect(response.unauthorized).toBe(true);
+        expect(response.unauthorized).toBeTrue();
         expect(response.body).toHaveProperty('error');
     });
 
@@ -54,7 +54,7 @@ describe('Auth endpoints', () => {
                 email: 'test2@example.com',
                 password: 'test',
             });
-        expect(response.ok).toBe(true);
+        expect(response.ok).toBeTrue();
         expect(response.body).toHaveProperty('token');
     });
 
@@ -66,7 +66,7 @@ describe('Auth endpoints', () => {
                 email: user.email,
                 password: 'test',
             });
-        expect(response.badRequest).toBe(true);
+        expect(response.badRequest).toBeTrue();
         expect(response.body).toHaveProperty('error');
     });
 
@@ -78,7 +78,7 @@ describe('Auth endpoints', () => {
                 email: 'test3@example.com',
                 password: 'test',
             });
-        expect(response.badRequest).toBe(true);
+        expect(response.badRequest).toBeTrue();
         expect(response.body).toHaveProperty('error');
     });
 });

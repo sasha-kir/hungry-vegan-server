@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { checkToken, generateToken } from '../../utils/jwt/tokens';
 import { DatabasePoolType, sql } from 'slonik';
+import db from '../../db';
 
 interface UserInfo {
     id: string | number;
@@ -18,7 +19,7 @@ const buildUser = (userInfo): UserInfo => {
     };
 };
 
-export const getUserData = (db: DatabasePoolType) => async (req: Request, res: Response) => {
+export const getUserData = async (req: Request, res: Response) => {
     const { email, error } = checkToken(req.header('Authentication'));
     if (error !== null || email === null) {
         return res.status(401).json({ error });

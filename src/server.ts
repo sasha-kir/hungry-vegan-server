@@ -2,17 +2,11 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { createPool } from 'slonik';
-
-import config from '../config';
 
 import * as foursquareAuth from './controllers/foursquare-auth';
 import * as foursquareData from './controllers/foursquare-data';
 import * as user from './controllers/user-data';
 import * as auth from './controllers/auth';
-
-const env = process.env.NODE_ENV || 'dev';
-export const db = createPool(config[env].database);
 
 const app = express();
 const port = 5000;
@@ -25,17 +19,17 @@ app.get('/', (_req, res) => {
 });
 
 app.get('/foursquare-client-id', foursquareAuth.getClientID);
-app.post('/foursquare-connect', foursquareAuth.foursquareConnect(db));
-app.post('/foursquare-login', foursquareAuth.foursquareLogin(db));
+app.post('/foursquare-connect', foursquareAuth.foursquareConnect);
+app.post('/foursquare-login', foursquareAuth.foursquareLogin);
 
-app.get('/user_lists', foursquareData.getLists(db));
-app.post('/list_data', foursquareData.getListById(db));
+app.get('/user_lists', foursquareData.getLists);
+app.post('/list_data', foursquareData.getListById);
 
-app.get('/user_data', user.getUserData(db));
-app.post('/update_user', user.updateUserData(db));
+app.get('/user_data', user.getUserData);
+app.post('/update_user', user.updateUserData);
 
-app.post('/login', auth.handleLogin(db));
-app.post('/register', auth.handleRegister(db));
+app.post('/login', auth.handleLogin);
+app.post('/register', auth.handleRegister);
 app.post('/hash', auth.hashPass);
 
 export const server = app.listen(port);

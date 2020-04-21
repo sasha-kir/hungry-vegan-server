@@ -11,6 +11,7 @@
         "postinstall": "install-types",
         "lint": "eslint . & echo 'lint complete'",
         "dev": "ts-node-dev --respawn --transpileOnly ./src/server.ts",
+        "create-migration": "node-pg-migrate create --tsconfig ./tsconfig.json",
         "migrate-up": "node-pg-migrate up --tsconfig ./tsconfig.json",
         "migrate-down": "node-pg-migrate down 3 --tsconfig ./tsconfig.json",
         "test": "cross-env NODE_ENV=test jest --testTimeout=10000 -i",

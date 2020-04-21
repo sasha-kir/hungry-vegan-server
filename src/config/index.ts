@@ -5,7 +5,7 @@ interface Config {
 }
 
 const config: { [key: string]: Config } = {
-    dev: {
+    development: {
         database: process.env.DATABASE_URL,
     },
     test: {

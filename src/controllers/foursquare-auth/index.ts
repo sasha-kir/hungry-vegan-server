@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { checkToken, generateToken } from '../../utils/jwt/tokens';
-import { DatabasePoolType } from 'slonik';
 
 import {
     setTokenByEmail,
@@ -18,14 +17,14 @@ export const getClientID = (_req: Request, res: Response) => {
     return res.json({ clientId: process.env.FOURSQUARE_CLIENT_ID });
 };
 
-export const foursquareLogin = (db: DatabasePoolType) => async (req: Request, res: Response) => {
+export const foursquareLogin = async (req: Request, res: Response) => {
     const { code, redirectUrl }: TokenRequest = req.body;
     if (code === undefined || redirectUrl === undefined) {
         return res.status(400).json({ error: 'missing required params' });
     }
     try {
         const accessToken = await aquireToken(code, redirectUrl);
-        const { email, error, isEmailValid = false } = await setTokenWithoutEmail(db, accessToken);
+        const { email, error, isEmailValid = false } = await setTokenWithoutEmail(accessToken);
         if (error !== null || email === null) {
             return res.status(500).json({ error: error });
         }
@@ -36,7 +35,7 @@ export const foursquareLogin = (db: DatabasePoolType) => async (req: Request, re
     }
 };
 
-export const foursquareConnect = (db: DatabasePoolType) => async (req: Request, res: Response) => {
+export const foursquareConnect = async (req: Request, res: Response) => {
     const { email, error: tokenError } = checkToken(req.header('Authentication'));
     if (tokenError !== null || email === null) {
         return res.status(401).json({ error: tokenError });
@@ -45,11 +44,11 @@ export const foursquareConnect = (db: DatabasePoolType) => async (req: Request, 
     if (code === undefined || redirectUrl === undefined) {
         return res.status(400).json({ error: 'missing required params' });
     }
-    const accessToken = await getTokenByEmail(db, email);
+    const accessToken = await getTokenByEmail(email);
     if (accessToken === null) {
         try {
             const accessToken = await aquireToken(code, redirectUrl);
-            const { error: trxError } = await setTokenByEmail(db, accessToken, email);
+            const { error: trxError } = await setTokenByEmail(accessToken, email);
             if (trxError !== null) {
                 return res.status(500).json({ error: trxError });
             }

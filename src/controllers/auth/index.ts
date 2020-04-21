@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { DatabasePoolType, sql } from 'slonik';
-
+import db from '../../db';
 import { generateToken } from '../../utils/jwt/tokens';
 
 const saltRounds = 10;
@@ -19,10 +19,7 @@ interface RegisterPayload extends LoginPayload {
     email: string;
 }
 
-export const handleLogin = (db: DatabasePoolType) => async (
-    req: CustomRequest<LoginPayload>,
-    res: Response,
-) => {
+export const handleLogin = async (req: CustomRequest<LoginPayload>, res: Response) => {
     const { username, password } = req.body;
     if (username === undefined || password === undefined) {
         return res.status(400).json({ error: 'missing required fields in request' });
@@ -56,10 +53,7 @@ export const handleLogin = (db: DatabasePoolType) => async (
     }
 };
 
-export const handleRegister = (db: DatabasePoolType) => async (
-    req: CustomRequest<RegisterPayload>,
-    res: Response,
-) => {
+export const handleRegister = async (req: CustomRequest<RegisterPayload>, res: Response) => {
     const { username, email, password } = req.body;
     if (username === undefined || email === undefined || password === undefined) {
         return res.status(400).json({ error: 'missing required fields in request' });

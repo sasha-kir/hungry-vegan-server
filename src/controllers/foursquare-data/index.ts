@@ -1,15 +1,14 @@
 import { Request, Response } from 'express';
 import { checkToken } from '../../utils/jwt/tokens';
-import { DatabasePoolType } from 'slonik';
 import { getUserLists, getListData } from '../../clients/foursquare';
 import { getTokenByEmail } from '../../utils/foursquare/accessToken';
 
-export const getLists = (db: DatabasePoolType) => async (req: Request, res: Response) => {
+export const getLists = async (req: Request, res: Response) => {
     const { email, error: tokenError } = checkToken(req.header('Authentication'));
     if (tokenError !== null || email === null) {
         return res.status(401).json({ error: tokenError });
     }
-    const accessToken = await getTokenByEmail(db, email);
+    const accessToken = await getTokenByEmail(email);
     if (accessToken === null) {
         return res.status(400).json({ error: 'user has no associated foursquare id' });
     }
@@ -20,12 +19,12 @@ export const getLists = (db: DatabasePoolType) => async (req: Request, res: Resp
     return res.json({ data: data });
 };
 
-export const getListById = (db: DatabasePoolType) => async (req: Request, res: Response) => {
+export const getListById = async (req: Request, res: Response) => {
     const { email, error: tokenError } = checkToken(req.header('Authentication'));
     if (tokenError !== null || email === null) {
         return res.status(401).json({ error: tokenError });
     }
-    const accessToken = await getTokenByEmail(db, email);
+    const accessToken = await getTokenByEmail(email);
     if (accessToken === null) {
         return res.status(400).json({ error: 'user has no associated foursquare id' });
     }

@@ -2,7 +2,7 @@ import request from 'supertest';
 import app, { server } from '../../server';
 import { prepareTestUser } from '../setup';
 import * as foursquareClient from '../../clients/foursquare';
-import * as tokenUtils from '../../utils/foursquare/accessToken';
+import * as tokenQueries from '../../database/access-tokens';
 
 let user;
 
@@ -22,7 +22,7 @@ describe('Foursquare data endpoints', () => {
                 itemsCount: 1,
             },
         ];
-        const mockGetToken = jest.spyOn(tokenUtils, 'getTokenByEmail');
+        const mockGetToken = jest.spyOn(tokenQueries, 'getTokenByEmail');
         mockGetToken.mockResolvedValueOnce(testToken);
         const mockGetLists = jest.spyOn(foursquareClient, 'getUserLists');
         mockGetLists.mockResolvedValueOnce({
@@ -59,7 +59,7 @@ describe('Foursquare data endpoints', () => {
         const testData = {
             itemsCount: 1,
         };
-        const mockGetToken = jest.spyOn(tokenUtils, 'getTokenByEmail');
+        const mockGetToken = jest.spyOn(tokenQueries, 'getTokenByEmail');
         mockGetToken.mockResolvedValueOnce(testToken);
         const mockGetList = jest.spyOn(foursquareClient, 'getListData');
         mockGetList.mockResolvedValueOnce({

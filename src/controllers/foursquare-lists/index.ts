@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
+
 import { checkToken } from '../../utils/jwt/tokens';
 import { getUserLists, getListData } from '../../clients/foursquare';
-import { getTokenByEmail } from '../../utils/foursquare/accessToken';
+import { getTokenByEmail } from '../../database/access-tokens';
+import { getFullListsData } from '../../database/foursquare-lists';
 
 export const getLists = async (req: Request, res: Response) => {
     const { email, error: tokenError } = checkToken(req.header('Authentication'));

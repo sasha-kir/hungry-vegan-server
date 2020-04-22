@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import { checkToken, generateToken } from '../../utils/jwt/tokens';
 
+import { aquireToken } from '../../utils/foursquare/accessToken';
 import {
     setTokenByEmail,
     getTokenByEmail,
-    aquireToken,
     setTokenWithoutEmail,
-} from '../../utils/foursquare/accessToken';
+} from '../../database/access-tokens';
 
 interface TokenRequest {
     code: string;

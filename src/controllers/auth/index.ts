@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
-import { DatabasePoolType, sql } from 'slonik';
-import db from '../../db';
 import { generateToken } from '../../utils/jwt/tokens';
+import { getUserByUsername, getUserByParams, createUser } from '../../database/users';
+import { getPasswordByEmail } from '../../database/login';
 
 const saltRounds = 10;
 
@@ -25,19 +25,11 @@ export const handleLogin = async (req: CustomRequest<LoginPayload>, res: Respons
         return res.status(400).json({ error: 'missing required fields in request' });
     }
     try {
-        const userRecord = await db.maybeOne(sql`
-          select *
-          from users 
-          where username = ${username}
-        `);
+        const userRecord = await getUserByUsername(username);
         if (userRecord === null) {
             return res.status(401).json({ error: 'wrong username or password' });
         }
-        const loginRecord = await db.maybeOne(sql`
-            select password
-            from login
-            where email = ${userRecord.email}
-        `);
+        const loginRecord = await getPasswordByEmail(userRecord.email.toString());
         if (loginRecord === null) {
             return res.status(401).json({ error: 'wrong username or password' });
         }
@@ -58,31 +50,17 @@ export const handleRegister = async (req: CustomRequest<RegisterPayload>, res: R
     if (username === undefined || email === undefined || password === undefined) {
         return res.status(400).json({ error: 'missing required fields in request' });
     }
-    try {
-        const userRecord = await db.maybeOne(sql`
-          select * from users 
-          where username = ${username}
-          or email = ${email}
-        `);
-        if (userRecord !== null) {
-            return res.status(400).json({ error: 'user already exists' });
-        }
-        const hash = bcrypt.hashSync(password, saltRounds);
-        await db.transaction(async trxConnection => {
-            await trxConnection.query(sql`
-                insert into users (username, email)
-                values (${username}, ${email})
-            `);
-            await trxConnection.query(sql`
-                insert into login (email, password)
-                values (${email}, ${hash})
-            `);
-        });
-        const token = generateToken(email);
-        return res.json({ token: token });
-    } catch (error) {
-        return res.status(500).json({ error: error.message });
+    const userRecord = await getUserByParams(username, email);
+    if (userRecord !== null) {
+        return res.status(400).json({ error: 'user already exists' });
     }
+    const hash = bcrypt.hashSync(password, saltRounds);
+    const { error: trxError } = await createUser(username, password, hash);
+    if (trxError !== null) {
+        return res.status(500).json({ error: trxError });
+    }
+    const token = generateToken(email);
+    return res.json({ token: token });
 };
 
 export const hashPass = (req, res) => {

@@ -14,7 +14,7 @@ export interface FsqListItem {
     location: FsqVenueLocation;
 }
 
-export interface FsqList extends Partial<FsqApiList> {
+export interface FsqList extends AtLeast<FsqApiList, 'id'> {
     itemsCount: number;
     items?: FsqListItem[];
 }

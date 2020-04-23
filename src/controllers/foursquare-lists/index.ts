@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 
 import { checkToken } from '../../utils/jwt/tokens';
-import { getUserLists, getListData } from '../../clients/foursquare';
+import { getListData } from '../../clients/foursquare';
 import { getTokenByEmail } from '../../database/access-tokens';
-import { getFullListsData } from '../../database/foursquare-lists';
+import { getFullListsData } from '../../utils/foursquare/lists';
 
 export const getLists = async (req: Request, res: Response) => {
     const { email, error: tokenError } = checkToken(req.header('Authentication'));
@@ -14,7 +14,7 @@ export const getLists = async (req: Request, res: Response) => {
     if (accessToken === null) {
         return res.status(400).json({ error: 'user has no associated foursquare id' });
     }
-    const { data, error: fsqError } = await getUserLists(accessToken);
+    const { data, error: fsqError } = await getFullListsData(accessToken, email);
     if (fsqError !== null || data === null) {
         return res.status(500).json({ error: fsqError });
     }

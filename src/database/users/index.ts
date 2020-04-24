@@ -32,22 +32,18 @@ export const getUserByParams = async (username: string, email: string) => {
 };
 
 export const createUser = async (username: string, email: string, hash: string) => {
-    try {
-        const userInfo = await db.transaction(async trxConnection => {
-            const userInfo = await trxConnection.query(sql`
+    const userInfo = await db.transaction(async trxConnection => {
+        const userInfo = await trxConnection.query(sql`
                 insert into users (username, email)
                 values (${username}, ${email})
             `);
-            await trxConnection.query(sql`
+        await trxConnection.query(sql`
                 insert into login (email, password)
                 values (${email}, ${hash})
             `);
-            return userInfo;
-        });
-        return { userData: userInfo, error: null };
-    } catch (error) {
-        return { userData: null, error: error.message };
-    }
+        return userInfo;
+    });
+    return userInfo;
 };
 
 export const updateUserByEmail = async (

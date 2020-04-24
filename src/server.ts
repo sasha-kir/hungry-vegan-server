@@ -3,10 +3,10 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 
-import * as foursquareAuth from './controllers/foursquare-auth';
-import * as foursquareLists from './controllers/foursquare-lists';
-import * as user from './controllers/user-data';
-import * as auth from './controllers/auth';
+import * as foursquareAuth from './api/foursquare-auth';
+import * as foursquareLists from './api/foursquare-lists';
+import * as user from './api/user-data';
+import * as auth from './api/authorization';
 
 const app = express();
 const port = 5000;
@@ -30,7 +30,6 @@ app.post('/update_user', user.updateUserData);
 
 app.post('/login', auth.handleLogin);
 app.post('/register', auth.handleRegister);
-app.post('/hash', auth.hashPass);
 
 export const server = app.listen(port);
 

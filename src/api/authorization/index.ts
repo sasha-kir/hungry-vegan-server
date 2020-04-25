@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import AuthService from '../../services/auth-service';
+import * as AuthService from '../../services/auth-service';
 
 interface CustomRequest<T> extends Request {
     body: T;

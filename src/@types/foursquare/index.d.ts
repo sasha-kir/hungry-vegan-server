@@ -1,49 +1,41 @@
-export interface FsqApiVenueLocation {
-    address: string;
-    lat: number;
-    lng: number;
-    cc: string;
+import { FsqApiUser, FsqApiList, FsqApiVenueLocation } from 'foursquare-api';
+
+type Coordinates = { latitude: number; longitude: number };
+
+export interface FsqVenueLocation extends Partial<FsqApiVenueLocation> {
+    countryCode: string;
+    coordinates: Coordinates;
+}
+
+export interface FsqListItem {
+    id: string;
+    name: string;
+    addedAt: number;
+    location: FsqVenueLocation;
+}
+
+export interface FsqList extends AtLeast<FsqApiList, 'id'> {
+    itemsCount: number;
+    items?: FsqListItem[];
+}
+
+export type FsqUser = Partial<FsqApiUser>;
+
+export interface FsqListData {
+    data: FsqList | null;
+    error: string | null;
+}
+
+export interface FsqUserListsData {
+    data: FsqList[] | null;
+    error: string | null;
+}
+
+export interface FsqUserData {
+    user: FsqUser | null;
+    error: string | null;
+}
+
+export interface FullFsqList extends FsqList {
     city: string;
-    country: string;
-}
-
-export interface FsqApiVenue {
-    id: string;
-    name: string;
-    location: FsqApiVenueLocation;
-}
-
-export interface FsqApiListItem {
-    id: string;
-    createdAt: number;
-    venue: FsqApiVenue;
-}
-
-export interface FsqApiListItems {
-    count: number;
-    items?: FsqApiListItem[];
-}
-
-export interface FsqApiList {
-    id: string;
-    name: string;
-    url: string;
-    canonicalUrl: string;
-    createdAt: number;
-    updatedAt: number;
-    listItems: FsqApiListItems;
-}
-
-export interface FsqApiUserLists {
-    count: number;
-    items: FsqApiList[];
-}
-
-export interface FsqApiUser {
-    id: string;
-    firstName: string;
-    lastName: string;
-    birthday: number;
-    homeCity: string;
-    lists: FsqApiUserLists;
 }

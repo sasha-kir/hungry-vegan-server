@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { FsqApiList, FsqApiVenueLocation, FsqApiListItem } from 'foursquare';
-import { FsqListData, FsqList, FsqListItem, FsqVenueLocation } from '../types';
+import { FsqApiList, FsqApiVenueLocation, FsqApiListItem } from 'foursquare-api';
+import { FsqListData, FsqList, FsqListItem, FsqVenueLocation } from 'foursquare';
 import { foursquareApi } from '..';
 
 const normalizeLocation = (location: FsqApiVenueLocation): FsqVenueLocation => ({
@@ -34,6 +34,7 @@ export const getListData = async (accessToken: string, listId: string): Promise<
         }
 
         const list: FsqList = {
+            id: fullList.id,
             itemsCount: fullList.listItems.count,
             items: fullList.listItems.items.map(item => normalizeListItem(item)),
         };

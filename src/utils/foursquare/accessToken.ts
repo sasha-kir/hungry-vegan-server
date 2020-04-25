@@ -1,23 +1,9 @@
-/* eslint-disable @typescript-eslint/camelcase */
-import axios from 'axios';
 import { promiseApi as initCryptus } from 'cryptus';
 
+import UserQuery from '../../database/users';
+import * as TokenQuery from '../../database/access-tokens';
+
 const cryptus = initCryptus();
-
-const tokenUrl = 'https://foursquare.com/oauth2/access_token';
-
-export const aquireToken = async (code: string, redirectUrl: string): Promise<string> => {
-    const { data: tokenData } = await axios.get(tokenUrl, {
-        params: {
-            client_id: process.env.FOURSQUARE_CLIENT_ID,
-            client_secret: process.env.FOURSQUARE_CLIENT_SECRET,
-            grant_type: 'authorization_code',
-            redirect_uri: redirectUrl,
-            code,
-        },
-    });
-    return tokenData.access_token;
-};
 
 export const encryptToken = async (accessToken: string): Promise<string> => {
     return await cryptus.encrypt(process.env.CRYPTUS_KEY, accessToken);
@@ -25,4 +11,21 @@ export const encryptToken = async (accessToken: string): Promise<string> => {
 
 export const decryptToken = async (encryptedToken: string): Promise<string> => {
     return await cryptus.decrypt(process.env.CRYPTUS_KEY, encryptedToken);
+};
+
+export const getAccessTokenFromDb = async (email: string): Promise<string | null> => {
+    const userFromDb = await UserQuery.getUserByEmail(email);
+    if (userFromDb === null) {
+        return null;
+    }
+    const foursquareId = userFromDb.foursquare_id;
+    if (!foursquareId) {
+        return null;
+    }
+    const tokenFromDb = await TokenQuery.getTokenByFoursquareId(Number(foursquareId));
+    if (tokenFromDb === null) {
+        return null;
+    }
+    const encryptedToken = tokenFromDb.access_token;
+    return await decryptToken(encryptedToken.toString());
 };

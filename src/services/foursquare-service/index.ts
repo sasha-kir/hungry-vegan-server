@@ -1,4 +1,4 @@
 import * as Auth from './foursquare-auth';
-// import * as Lists from './foursqaure-lists';
+import * as Lists from './foursquare-lists';
 
-export default { ...Auth };
+export default { ...Auth, ...Lists };

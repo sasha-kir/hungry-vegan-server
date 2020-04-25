@@ -1,7 +1,6 @@
-import { getUserData } from '../../../clients/foursquare';
+import FoursquareClient from '../../../clients/foursquare';
 import { generateToken } from '../../../utils/jwt/tokens';
-import { aquireToken, encryptToken } from '../../../utils/foursquare/accessToken';
-import * as TokenQuery from '../../../database/access-tokens';
+import { encryptToken, getAccessTokenFromDb } from '../../../utils/foursquare/accessToken';
 import UserQuery from '../../../database/users';
 
 interface FsqAuthResponse {
@@ -10,16 +9,24 @@ interface FsqAuthResponse {
     error: string | null;
 }
 
-export const authorizeUser = async ({
+const getFoursquareId = async (accessToken: string): Promise<number | null> => {
+    const { user, error: dataError } = await FoursquareClient.getUserData(accessToken);
+    if (dataError !== null || user === null) {
+        return null;
+    }
+    const foursquareId = Number(user.id);
+    return foursquareId;
+};
+
+export const registerUser = async ({
     code,
     redirectUrl,
 }: OAuthPayload): Promise<FsqAuthResponse> => {
-    const accessToken = await aquireToken(code, redirectUrl);
-    const { user, error: dataError } = await getUserData(accessToken);
-    if (dataError !== null || user === null) {
-        return { token: null, error: dataError };
+    const accessToken = await FoursquareClient.aquireToken(code, redirectUrl);
+    const foursquareId = await getFoursquareId(accessToken);
+    if (foursquareId === null) {
+        return { token: null, error: 'error fetching user from foursquare' };
     }
-    const foursquareId = Number(user.id);
     const userFromDb = await UserQuery.getUserByFoursquareId(foursquareId);
     if (userFromDb !== null) {
         const isEmailValid = userFromDb.email !== String(userFromDb.foursquare_id);
@@ -37,17 +44,12 @@ export const connectUser = async ({
     redirectUrl,
     email,
 }: OAuthPayload & { email: string }): Promise<FsqAuthResponse> => {
-    const userFromDb = await UserQuery.getUserByEmail(email);
-    if (userFromDb === null) {
-        return { token: null, error: 'user info not found' };
-    }
-    const foursquareId = Number(userFromDb.foursquare_id);
-    const tokenFromDb = await TokenQuery.getTokenByFoursquareId(foursquareId);
-    if (tokenFromDb === null) {
-        const accessToken = await aquireToken(code, redirectUrl);
-        const { user, error: dataError } = await getUserData(accessToken);
-        if (dataError !== null || user === null) {
-            return { token: null, error: dataError };
+    const userToken = await getAccessTokenFromDb(email);
+    if (userToken === null) {
+        const accessToken = await FoursquareClient.aquireToken(code, redirectUrl);
+        const foursquareId = await getFoursquareId(accessToken);
+        if (foursquareId === null) {
+            return { token: null, error: 'error fetching user from foursquare' };
         }
         const encryptedToken = await encryptToken(accessToken);
         await UserQuery.setUserFoursquareId(email, foursquareId, encryptedToken);

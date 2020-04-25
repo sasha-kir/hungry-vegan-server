@@ -1,14 +1,10 @@
-import { getUserLists } from '../../clients/foursquare';
-import { FsqList } from '../../clients/foursquare/types';
-import { getUserByEmail } from '../../database/users';
-import { saveListsData, getListsData } from '../../database/foursquare-lists';
-
-interface FullList extends FsqList {
-    city: string;
-}
+import { FullFsqList } from 'foursquare';
+import FoursquareClient from '../../clients/foursquare';
+import UserQuery from '../../database/users';
+import * as FsqListsQuery from '../../database/foursquare-lists';
 
 interface FullListsData {
-    data: FullList[] | null;
+    data: FullFsqList[] | null;
     error: string | null;
 }
 
@@ -16,19 +12,19 @@ export const getFullListsData = async (
     accessToken: string,
     email: string,
 ): Promise<FullListsData> => {
-    const { data, error } = await getUserLists(accessToken);
+    const { data, error } = await FoursquareClient.getUserLists(accessToken);
     if (error !== null || data === null) {
         return { data: null, error: error };
     }
-    const user = await getUserByEmail(email);
+    const user = await UserQuery.getUserByEmail(email);
     if (user === null) {
         return { data: null, error: 'error retrieving user data' };
     }
     const sortedData = data.sort((a, b) => b.id.localeCompare(a.id));
     try {
-        await saveListsData(data, user['id']);
-        const dbListData = await getListsData(user['id']);
-        const fullData: FullList[] = sortedData.map((list, index) => ({
+        await FsqListsQuery.saveListsData(data, user['id']);
+        const dbListData = await FsqListsQuery.getListsData(user['id']);
+        const fullData: FullFsqList[] = sortedData.map((list, index) => ({
             ...list,
             city: dbListData[index]['city'] ? dbListData[index]['city'].toString() : '',
         }));

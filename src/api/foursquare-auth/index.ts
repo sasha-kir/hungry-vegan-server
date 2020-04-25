@@ -12,7 +12,7 @@ export const foursquareLogin = async (req: Request, res: Response) => {
         return res.status(400).json({ error: 'missing required params' });
     }
     try {
-        const { token, error, isEmailValid } = await FoursquareService.authorizeUser({
+        const { token, error, isEmailValid } = await FoursquareService.registerUser({
             code,
             redirectUrl,
         });

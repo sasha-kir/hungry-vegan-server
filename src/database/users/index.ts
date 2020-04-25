@@ -22,6 +22,14 @@ export const getUserByEmail = async (email: string) => {
     return userRecord;
 };
 
+export const getUserByFoursquareId = async (foursquareId: number) => {
+    const userRecord = await db.maybeOne(sql`
+        select * from users 
+        where foursquare_id = ${foursquareId}
+    `);
+    return userRecord;
+};
+
 export const getUserByParams = async (username: string, email: string) => {
     const userRecord = await db.maybeOne(sql`
         select * from users 
@@ -31,7 +39,7 @@ export const getUserByParams = async (username: string, email: string) => {
     return userRecord;
 };
 
-export const createUser = async (username: string, email: string, hash: string) => {
+export const createUserByEmail = async (username: string, email: string, hash: string) => {
     const userInfo = await db.transaction(async trxConnection => {
         const userInfo = await trxConnection.query(sql`
                 insert into users (username, email)
@@ -46,7 +54,38 @@ export const createUser = async (username: string, email: string, hash: string) 
     return userInfo;
 };
 
-export const updateUserByEmail = async (
+export const createUserByFoursquareId = async (foursquareId: number, token: string) => {
+    const userInfo = await db.transaction(async trxConnection => {
+        const userInfo = await trxConnection.query(sql`
+            insert into users (email, foursquare_id)
+            values (${foursquareId}, ${foursquareId})
+        `);
+        await trxConnection.query(sql`
+            insert into access_tokens (foursquare_id, access_token)
+            values (${foursquareId}, ${token})
+        `);
+        return userInfo;
+    });
+    return userInfo;
+};
+
+export const setUserFoursquareId = async (email: string, foursquareId: number, token: string) => {
+    const userInfo = await db.transaction(async trxConnection => {
+        const userInfo = await trxConnection.query(sql`
+            update users set foursquare_id = ${foursquareId}
+            where email = ${email}
+            returning *
+        `);
+        await trxConnection.query(sql`
+            insert into access_tokens (foursquare_id, access_token)
+            values (${foursquareId}, ${token})
+        `);
+        return userInfo;
+    });
+    return userInfo;
+};
+
+export const updateUserEmail = async (
     username: string,
     currentEmail: string,
     newEmail: string,

@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { generateToken } from '../../utils/jwt/tokens';
-import { getUserByUsername, getUserByParams, createUser } from '../../database/users';
+import { getUserByUsername, getUserByParams, createUserByEmail } from '../../database/users';
 import { getPasswordByEmail } from '../../database/login';
 
 const saltRounds = 10;
@@ -39,7 +39,7 @@ class AuthService {
             return { error: 'user already exists', token: null };
         }
         const hash = bcrypt.hashSync(password, saltRounds);
-        await createUser(username, password, hash);
+        await createUserByEmail(username, email, hash);
         const token = generateToken(email);
         return { token: token, error: null };
     };

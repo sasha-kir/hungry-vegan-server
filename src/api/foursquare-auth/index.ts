@@ -1,35 +1,25 @@
 import { Request, Response } from 'express';
-import { checkToken, generateToken } from '../../utils/jwt/tokens';
-
-import { aquireToken } from '../../utils/foursquare/accessToken';
-import {
-    setTokenByEmail,
-    getTokenByEmail,
-    setTokenWithoutEmail,
-} from '../../database/access-tokens';
-
-interface TokenRequest {
-    code: string;
-    redirectUrl: string;
-}
+import { checkToken } from '../../utils/jwt/tokens';
+import FoursquareService from '../../services/foursquare-auth-service';
 
 export const getClientID = (_req: Request, res: Response) => {
     return res.json({ clientId: process.env.FOURSQUARE_CLIENT_ID });
 };
 
 export const foursquareLogin = async (req: Request, res: Response) => {
-    const { code, redirectUrl }: TokenRequest = req.body;
+    const { code, redirectUrl }: OAuthPayload = req.body;
     if (code === undefined || redirectUrl === undefined) {
         return res.status(400).json({ error: 'missing required params' });
     }
     try {
-        const accessToken = await aquireToken(code, redirectUrl);
-        const { email, error, isEmailValid = false } = await setTokenWithoutEmail(accessToken);
-        if (error !== null || email === null) {
+        const { token, error, isEmailValid } = await FoursquareService.authorizeUser({
+            code,
+            redirectUrl,
+        });
+        if (error !== null || token === null) {
             return res.status(500).json({ error: error });
         }
-        const responseToken = generateToken(email);
-        return res.json({ token: responseToken, isEmailValid });
+        return res.json({ token, isEmailValid });
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
@@ -40,22 +30,17 @@ export const foursquareConnect = async (req: Request, res: Response) => {
     if (tokenError !== null || email === null) {
         return res.status(401).json({ error: tokenError });
     }
-    const { code, redirectUrl }: TokenRequest = req.body;
+    const { code, redirectUrl }: OAuthPayload = req.body;
     if (code === undefined || redirectUrl === undefined) {
         return res.status(400).json({ error: 'missing required params' });
     }
-    const accessToken = await getTokenByEmail(email);
-    if (accessToken === null) {
-        try {
-            const accessToken = await aquireToken(code, redirectUrl);
-            const { error: trxError } = await setTokenByEmail(accessToken, email);
-            if (trxError !== null) {
-                return res.status(500).json({ error: trxError });
-            }
-        } catch (error) {
-            return res.status(500).json({ error: error.message });
+    try {
+        const { token, error } = await FoursquareService.connectUser({ code, redirectUrl, email });
+        if (error !== null || token === null) {
+            return res.status(500).json({ error: error });
         }
+        return res.json({ token });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
     }
-    const responseToken = generateToken(email);
-    return res.json({ token: responseToken });
 };

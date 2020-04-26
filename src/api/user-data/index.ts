@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { checkToken, generateToken } from '../../utils/jwt/tokens';
-import { getUserByEmail, updateUserEmail } from '../../database/users';
+import UserQuery from '../../database/users';
 
 interface UserInfo {
     id: string | number;
@@ -23,7 +23,7 @@ export const getUserData = async (req: Request, res: Response) => {
     if (error !== null || email === null) {
         return res.status(401).json({ error });
     }
-    const userInfo = await getUserByEmail(email);
+    const userInfo = await UserQuery.getUserByEmail(email);
     if (userInfo === null) {
         return res.status(404).json({ error: 'user info not found' });
     }
@@ -39,7 +39,11 @@ export const updateUserData = async (req: Request, res: Response) => {
     if (username === undefined || email === undefined || email === '') {
         return res.status(400).json({ error: 'received invalid user data' });
     }
-    const { userData, error: trxError } = await updateUserEmail(username, currentEmail, email);
+    const { userData, error: trxError } = await UserQuery.updateUserEmail(
+        username,
+        currentEmail,
+        email,
+    );
     if (trxError !== null || userData === null) {
         return res.status(500).json({ error: 'internal server error' });
     }

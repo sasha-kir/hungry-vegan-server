@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app, { server } from '../../server';
 import { prepareTestUser } from '../setup';
-import * as tokenUtils from '../../utils/foursquare/accessToken';
+import FoursquareClient from '../../clients/foursquare';
 
 let user;
 
@@ -22,12 +22,13 @@ describe('Foursquare auth endpoints', () => {
     });
 
     it('should complete login on foursquare', async () => {
-        const mockAquireToken = jest.spyOn(tokenUtils, 'aquireToken');
-        mockAquireToken.mockResolvedValueOnce('test');
-        const mockSetToken = jest.spyOn(tokenUtils, 'setTokenWithoutEmail');
-        mockSetToken.mockResolvedValueOnce({
+        const testToken = '12345';
+        const mockAquireToken = jest.spyOn(FoursquareClient, 'aquireToken');
+        mockAquireToken.mockResolvedValueOnce(testToken);
+        const mockGetUser = jest.spyOn(FoursquareClient, 'getUserData');
+        mockGetUser.mockResolvedValueOnce({
+            user: { id: '123' },
             error: null,
-            email: 'test',
         });
         const response = await request(app)
             .post('/foursquare-login')
@@ -36,7 +37,7 @@ describe('Foursquare auth endpoints', () => {
                 redirectUrl: 'url',
             });
         expect(mockAquireToken).toHaveBeenCalledWith('code', 'url');
-        expect(mockSetToken).toHaveBeenCalled();
+        expect(mockGetUser).toHaveBeenCalledWith(testToken);
         expect(response.ok).toBeTrue();
         expect(response.body).toHaveProperty('token');
         expect(response.body).toHaveProperty('isEmailValid');
@@ -45,13 +46,14 @@ describe('Foursquare auth endpoints', () => {
     });
 
     it('should connect existing user to foursquare', async () => {
+        const testToken = '12345';
         const testData = { code: 'code', url: 'url' };
-        const mockAquireToken = jest.spyOn(tokenUtils, 'aquireToken');
-        mockAquireToken.mockResolvedValueOnce('test');
-        const mockSetToken = jest.spyOn(tokenUtils, 'setTokenByEmail');
-        mockSetToken.mockResolvedValueOnce({
+        const mockAquireToken = jest.spyOn(FoursquareClient, 'aquireToken');
+        mockAquireToken.mockResolvedValueOnce(testToken);
+        const mockGetUser = jest.spyOn(FoursquareClient, 'getUserData');
+        mockGetUser.mockResolvedValueOnce({
+            user: { id: '123' },
             error: null,
-            email: user.email,
         });
         const response = await request(app)
             .post('/foursquare-connect')
@@ -61,7 +63,7 @@ describe('Foursquare auth endpoints', () => {
                 redirectUrl: testData.url,
             });
         expect(mockAquireToken).toHaveBeenCalledWith(testData.code, testData.url);
-        expect(mockSetToken).toHaveBeenCalled();
+        expect(mockGetUser).toHaveBeenCalledWith('testToken');
         expect(response.ok).toBeTrue();
         expect(response.body).toHaveProperty('token');
         expect(response.body.token).toBeString();

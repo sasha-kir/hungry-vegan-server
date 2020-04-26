@@ -1,14 +1,15 @@
 import request from 'supertest';
 import app, { server } from '../../server';
 import { prepareTestUser } from '../setup';
-import * as foursquareClient from '../../clients/foursquare';
-import * as tokenQueries from '../../database/access-tokens';
+import FoursquareClient from '../../clients/foursquare';
+import * as TokenUtils from '../../utils/foursquare/accessToken';
 
 let user;
 
 describe('Foursquare data endpoints', () => {
-    beforeAll(async () => {
+    beforeAll(async done => {
         user = await prepareTestUser('fsq-data');
+        done();
     });
 
     afterAll(() => {
@@ -16,15 +17,16 @@ describe('Foursquare data endpoints', () => {
     });
 
     it('should fetch foursquare lists', async () => {
-        const testToken = '123';
+        const testToken = '12345';
         const testData = [
             {
+                id: '1',
                 itemsCount: 1,
             },
         ];
-        const mockGetToken = jest.spyOn(tokenQueries, 'getTokenByEmail');
+        const mockGetToken = jest.spyOn(TokenUtils, 'getAccessTokenFromDb');
         mockGetToken.mockResolvedValueOnce(testToken);
-        const mockGetLists = jest.spyOn(foursquareClient, 'getUserLists');
+        const mockGetLists = jest.spyOn(FoursquareClient, 'getUserLists');
         mockGetLists.mockResolvedValueOnce({
             error: null,
             data: testData,
@@ -55,13 +57,14 @@ describe('Foursquare data endpoints', () => {
 
     it('should fetch foursquare list data', async () => {
         const listId = 1;
-        const testToken = '123';
+        const testToken = '12345';
         const testData = {
+            id: '1',
             itemsCount: 1,
         };
-        const mockGetToken = jest.spyOn(tokenQueries, 'getTokenByEmail');
+        const mockGetToken = jest.spyOn(TokenUtils, 'getAccessTokenFromDb');
         mockGetToken.mockResolvedValueOnce(testToken);
-        const mockGetList = jest.spyOn(foursquareClient, 'getListData');
+        const mockGetList = jest.spyOn(FoursquareClient, 'getListData');
         mockGetList.mockResolvedValueOnce({
             error: null,
             data: testData,
@@ -74,7 +77,7 @@ describe('Foursquare data endpoints', () => {
         expect(mockGetList).toHaveBeenCalledWith(testToken, listId);
         expect(response.ok).toBeTrue();
         expect(response.body).toHaveProperty('data');
-        expect(response.body.data).toContainAllKeys(['itemsCount']);
+        expect(response.body.data).toContainAllKeys(['id', 'itemsCount']);
     });
 
     it('should not fetch list data without foursquareId', async () => {

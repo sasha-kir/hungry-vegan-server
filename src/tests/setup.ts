@@ -1,13 +1,10 @@
-import bcrypt from 'bcrypt';
-import { sql } from 'slonik';
-import { db } from '../server';
-import { generateToken } from '../utils/jwt/tokens';
+import * as AuthService from '../services/auth-service';
 
 interface TestUser {
     username: string;
     email: string;
     password: string;
-    token?: string;
+    token?: string | null;
 }
 
 export const prepareTestUser = async (prefix: string): Promise<TestUser> => {
@@ -16,17 +13,8 @@ export const prepareTestUser = async (prefix: string): Promise<TestUser> => {
         email: `${prefix}_test@example.com`,
         password: 'test',
     };
-    const hash = await bcrypt.hash(user.password, 10);
-    await db.transaction(async trxConnection => {
-        await trxConnection.query(sql`
-            insert into users (username, email)
-            values (${user.username}, ${user.email})
-        `);
-        await trxConnection.query(sql`
-            insert into login (email, password)
-            values (${user.email}, ${hash})
-        `);
-    });
-    user.token = generateToken(user.email);
+    const { token } = await AuthService.registerUser(user);
+    user.token = token;
+    console.log(user);
     return user;
 };

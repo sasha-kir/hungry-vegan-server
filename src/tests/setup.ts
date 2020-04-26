@@ -15,6 +15,5 @@ export const prepareTestUser = async (prefix: string): Promise<TestUser> => {
     };
     const { token } = await AuthService.registerUser(user);
     user.token = token;
-    console.log(user);
     return user;
 };

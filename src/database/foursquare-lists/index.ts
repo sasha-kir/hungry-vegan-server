@@ -1,11 +1,8 @@
 import { sql } from 'slonik';
 import db from '../../database';
-import { FsqList } from 'foursquare';
+import { FsqList, FullFsqList } from 'foursquare';
 
-export const saveListsData = async (
-    listData: FsqList[],
-    userId: string | number,
-): Promise<void> => {
+export const saveInitialData = async (userId: string | number, listData: FsqList[]) => {
     const valuesList = listData.map(list => {
         const valuesTuple = sql.join([userId, list.id], sql`, `);
         return sql`(${valuesTuple})`;
@@ -25,4 +22,19 @@ export const getListsData = async (userId: string | number) => {
         order by list_id desc
     `);
     return lists;
+};
+
+export const updateListCities = async (userId: string | number, listData: FullFsqList[]) => {
+    const trxResult = await db.transaction(async trxConnection => {
+        const updateQueries = listData.map(list =>
+            trxConnection.query(sql`
+                update foursquare_lists set city = ${list.city}
+                where list_id = ${list.id} and user_id = ${userId}
+            `),
+        );
+        const trxResult = await Promise.all(updateQueries);
+        return trxResult;
+    });
+    console.log(trxResult);
+    return trxResult;
 };

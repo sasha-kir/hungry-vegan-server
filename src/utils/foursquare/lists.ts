@@ -22,7 +22,7 @@ export const getFullListsData = async (
     }
     const sortedData = data.sort((a, b) => b.id.localeCompare(a.id));
     try {
-        await FsqListsQuery.saveListsData(data, user['id']);
+        await FsqListsQuery.saveInitialData(user['id'], data);
         const dbListData = await FsqListsQuery.getListsData(user['id']);
         const fullData: FullFsqList[] = sortedData.map((list, index) => ({
             ...list,

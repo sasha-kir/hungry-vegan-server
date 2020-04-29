@@ -2,6 +2,8 @@ import { FullFsqList, FsqList } from 'foursquare';
 import FoursquareClient from '../../../clients/foursquare';
 import { getAccessTokenFromDb } from '../../../utils/foursquare/accessToken';
 import { getFullListsData } from '../../../utils/foursquare/lists';
+import UserQuery from '../../../database/users';
+import * as FsqListsQuery from '../../../database/foursquare-lists';
 
 interface DefaultResponse {
     error: string | null;
@@ -38,4 +40,13 @@ export const getListDetails = async (email: string, listId: string): Promise<Det
         return { data: null, error: error, responseCode: 500 };
     }
     return { data: data, error: null, responseCode: 200 };
+};
+
+export const updateLists = async (email: string, lists: FullFsqList[]): Promise<ListsResponse> => {
+    const user = await UserQuery.getUserByEmail(email);
+    if (user === null) {
+        return { data: null, error: 'user not found in database', responseCode: 404 };
+    }
+    await FsqListsQuery.updateListCities(user['id'], lists);
+    return await getLists(email);
 };

@@ -18,7 +18,7 @@ export const getAccessTokenFromDb = async (email: string): Promise<string | null
     if (userFromDb === null) {
         return null;
     }
-    const foursquareId = userFromDb.foursquare_id;
+    const foursquareId = userFromDb.foursquareId;
     if (!foursquareId) {
         return null;
     }
@@ -26,6 +26,6 @@ export const getAccessTokenFromDb = async (email: string): Promise<string | null
     if (tokenFromDb === null) {
         return null;
     }
-    const encryptedToken = tokenFromDb.access_token;
+    const encryptedToken = tokenFromDb.accessToken;
     return await decryptToken(encryptedToken.toString());
 };

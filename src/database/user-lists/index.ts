@@ -36,6 +36,5 @@ export const updateListLocations = async (userId: string | number, listData: Ful
         const trxResult = await Promise.all(updateQueries);
         return trxResult;
     });
-    console.log(trxResult);
     return trxResult;
 };

@@ -15,6 +15,6 @@ export interface OAuthPayload {
 }
 
 export interface FullList extends FsqList {
-    location: string | null;
+    location: string;
     coordinates: Coordinates | null;
 }

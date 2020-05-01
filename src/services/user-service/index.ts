@@ -13,7 +13,7 @@ const buildUser = (userInfo): UserInfo => {
         id: userInfo.id,
         username: userInfo.username || '',
         email: userInfo.email,
-        foursquareId: userInfo.foursquare_id || '',
+        foursquareId: userInfo.foursquareId || '',
     };
 };
 

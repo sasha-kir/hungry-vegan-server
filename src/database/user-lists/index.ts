@@ -26,12 +26,15 @@ export const getListsData = async (userId: string | number) => {
 
 export const updateListLocations = async (userId: string | number, listData: FullList[]) => {
     const trxResult = await db.transaction(async trxConnection => {
-        const updateQueries = listData.map(list =>
-            trxConnection.query(sql`
-                update user_lists set location = ${list.location}
+        const updateQueries = listData.map(list => {
+            const lat = list.coordinates ? list.coordinates.latitude : null;
+            const lon = list.coordinates ? list.coordinates.longitude : null;
+            return trxConnection.query(sql`
+                update user_lists set location = ${list.location},
+                lat = ${lat}, lon = ${lon}
                 where list_id = ${list.id} and user_id = ${userId}
-            `),
-        );
+            `);
+        });
         const trxResult = await Promise.all(updateQueries);
         return trxResult;
     });

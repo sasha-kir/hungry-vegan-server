@@ -18,3 +18,9 @@ export interface FullList extends FsqList {
     location: string;
     coordinates: Coordinates | null;
 }
+
+export interface ListMetaData {
+    location: string;
+    coordinates: Coordinates;
+    countryCode: string;
+}

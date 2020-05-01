@@ -6,5 +6,6 @@ declare namespace NodeJS {
         CRYPTUS_KEY: string;
         FOURSQUARE_CLIENT_ID: string;
         FOURSQUARE_CLIENT_SECRET: string;
+        YANDEX_API_KEY: string;
     }
 }

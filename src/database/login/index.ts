@@ -1,8 +1,7 @@
-import { sql } from 'slonik';
-import db from '..';
+import db, { sql } from '..';
 
 export const getPasswordByEmail = async (email: string) => {
-    const loginRecord = await db.maybeOne(sql`
+    const loginRecord = await db.maybeOne(sql.LoginRecord`
         select password from login
         where email = ${email}
     `);

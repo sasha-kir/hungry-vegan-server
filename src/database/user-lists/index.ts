@@ -1,5 +1,4 @@
-import { sql } from 'slonik';
-import db from '..';
+import db, { sql } from '..';
 import { FsqList } from 'foursquare';
 import { FullList } from 'internal';
 
@@ -17,7 +16,7 @@ export const saveInitialData = async (userId: string | number, listData: FsqList
 };
 
 export const getListsData = async (userId: string | number) => {
-    const lists = await db.many(sql`
+    const lists = await db.many(sql.ListRecord`
         select * from user_lists
         where user_id = ${userId}
         order by list_id desc

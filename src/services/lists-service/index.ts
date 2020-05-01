@@ -23,7 +23,7 @@ const normalizeLists = async (userId: string | number, lists: FsqList[]): Promis
     const dbListData = await ListsQuery.getListsData(userId);
     const normalized: FullList[] = sortedData.map((list, index) => {
         const dbList = dbListData[index];
-        const listLocation = dbList.location ? dbList.location.toString() : '';
+        const listLocation = dbList.location ? dbList.location : '';
         const listCoords =
             dbList.lat && dbList.lon
                 ? { latitude: Number(dbList.lat), longitude: Number(dbList.lat) }
@@ -44,7 +44,7 @@ export const getLists = async (email: string): Promise<ListsResponse> => {
     }
     const user = await UserQuery.getUserByEmail(email);
     if (user === null) {
-        return { data: null, error: 'error retrieving user data', responseCode: 500 };
+        return { data: null, error: 'user not found in database', responseCode: 404 };
     }
     const { data, error } = await FoursquareClient.getUserLists(userToken);
     if (error !== null || data === null) {

@@ -1,5 +1,6 @@
 import { generateToken } from '../../utils/jwt/tokens';
 import UserQuery from '../../database/users';
+import { UserRecord } from '../../generated/db';
 
 interface UserInfo {
     id: string | number;
@@ -8,12 +9,12 @@ interface UserInfo {
     foursquareId: string | number;
 }
 
-const buildUser = (userInfo): UserInfo => {
+const buildUser = (userInfo: UserRecord): UserInfo => {
     return {
         id: userInfo.id,
         username: userInfo.username || '',
         email: userInfo.email,
-        foursquareId: userInfo.foursquareId || '',
+        foursquareId: userInfo.foursquare_id || '',
     };
 };
 

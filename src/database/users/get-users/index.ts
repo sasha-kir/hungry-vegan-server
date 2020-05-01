@@ -1,8 +1,7 @@
-import { sql } from 'slonik';
-import db from '../..';
+import db, { sql } from '../..';
 
 export const getUserByUsername = async (username: string) => {
-    const userRecord = await db.maybeOne(sql`
+    const userRecord = await db.maybeOne(sql.UserRecord`
         select * from users 
         where username = ${username}
     `);
@@ -10,7 +9,7 @@ export const getUserByUsername = async (username: string) => {
 };
 
 export const getUserByEmail = async (email: string) => {
-    const userRecord = await db.maybeOne(sql`
+    const userRecord = await db.maybeOne(sql.UserRecord`
         select * from users
         where email = ${email}
     `);
@@ -18,7 +17,7 @@ export const getUserByEmail = async (email: string) => {
 };
 
 export const getUserByFoursquareId = async (foursquareId: number) => {
-    const userRecord = await db.maybeOne(sql`
+    const userRecord = await db.maybeOne(sql.UserRecord`
         select * from users 
         where foursquare_id = ${foursquareId}
     `);
@@ -26,7 +25,7 @@ export const getUserByFoursquareId = async (foursquareId: number) => {
 };
 
 export const getUserByParams = async (username: string, email: string) => {
-    const userRecord = await db.maybeOne(sql`
+    const userRecord = await db.maybeOne(sql.UserRecord`
         select * from users 
         where username = ${username}
         or email = ${email}

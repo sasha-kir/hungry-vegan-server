@@ -1,9 +1,8 @@
-import { sql } from 'slonik';
-import db from '../..';
+import db, { sql } from '../..';
 
 export const setUserFoursquareId = async (email: string, foursquareId: number, token: string) => {
     const userInfo = await db.transaction(async trxConnection => {
-        const userInfo = await trxConnection.query(sql`
+        const userInfo = await trxConnection.query(sql.UserRecord`
             update users set foursquare_id = ${foursquareId}
             where email = ${email}
             returning *
@@ -19,7 +18,7 @@ export const setUserFoursquareId = async (email: string, foursquareId: number, t
 
 export const updateUserEmail = async (username: string, currentEmail: string, newEmail: string) => {
     const userInfo = await db.transaction(async trxConnection => {
-        const userInfo = await trxConnection.one(sql`
+        const userInfo = await trxConnection.one(sql.UserRecord`
                 update users set email = ${newEmail}, username = ${username}
                 where email = ${currentEmail}
                 returning *

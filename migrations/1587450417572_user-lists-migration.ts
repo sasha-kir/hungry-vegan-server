@@ -5,7 +5,7 @@ export const shorthands: ColumnDefinitions | undefined = undefined;
 
 export async function up(pgm: MigrationBuilder): Promise<void> {
     pgm.createTable(
-        'foursquare_lists',
+        'user_lists',
         {
             user_id: {
                 type: 'varchar(100)',
@@ -15,8 +15,14 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
                 type: 'varchar(300)',
                 notNull: true,
             },
-            city: {
+            location: {
                 type: 'text',
+            },
+            lat: {
+                type: 'real',
+            },
+            lon: {
+                type: 'real',
             },
         },
         {
@@ -25,9 +31,9 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
             },
         },
     );
-    pgm.createIndex('foursquare_lists', 'user_id');
+    pgm.createIndex('user_lists', 'user_id');
 }
 
 export async function down(pgm: MigrationBuilder): Promise<void> {
-    pgm.dropTable('foursquare_lists');
+    pgm.dropTable('user_lists');
 }

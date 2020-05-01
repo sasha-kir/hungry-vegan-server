@@ -1,4 +1,5 @@
 import FoursquareClient from '../../../clients/foursquare';
+import { OAuthPayload } from 'internal';
 import { generateToken } from '../../../utils/jwt/tokens';
 import { encryptToken, getAccessTokenFromDb } from '../../../utils/foursquare/accessToken';
 import UserQuery from '../../../database/users';

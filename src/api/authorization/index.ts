@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { LoginPayload, RegisterPayload } from 'internal';
 import * as AuthService from '../../services/auth-service';
 
 interface CustomRequest<T> extends Request {

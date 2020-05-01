@@ -35,7 +35,3 @@ export interface FsqUserData {
     user: FsqUser | null;
     error: string | null;
 }
-
-export interface FullFsqList extends FsqList {
-    city: string;
-}

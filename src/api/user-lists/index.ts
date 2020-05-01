@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import { checkToken } from '../../utils/jwt/tokens';
-import FoursquareService from '../../services/foursquare-service';
+import * as ListsService from '../../services/lists-service';
 
 export const getLists = async (req: Request, res: Response) => {
     const { email, error: tokenError } = checkToken(req.header('Authentication'));
@@ -9,7 +9,7 @@ export const getLists = async (req: Request, res: Response) => {
         return res.status(401).json({ error: tokenError });
     }
     try {
-        const { data, error, responseCode } = await FoursquareService.getLists(email);
+        const { data, error, responseCode } = await ListsService.getLists(email);
         if (error !== null || data === null) {
             return res.status(responseCode).json({ error: error });
         }
@@ -29,7 +29,7 @@ export const getListById = async (req: Request, res: Response) => {
         return res.status(400).json({ error: 'no listId was provided' });
     }
     try {
-        const { data, error, responseCode } = await FoursquareService.getListDetails(email, listId);
+        const { data, error, responseCode } = await ListsService.getListDetails(email, listId);
         if (error !== null || data === null) {
             return res.status(responseCode).json({ error: error });
         }
@@ -49,7 +49,7 @@ export const updateLists = async (req: Request, res: Response) => {
         return res.status(400).json({ error: 'nothing to update: no lists in request' });
     }
     try {
-        const { data, error, responseCode } = await FoursquareService.updateLists(email, lists);
+        const { data, error, responseCode } = await ListsService.updateLists(email, lists);
         if (error !== null || data === null) {
             return res.status(responseCode).json({ error: error });
         }

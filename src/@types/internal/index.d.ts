@@ -1,13 +1,20 @@
-interface LoginPayload {
+import { FsqList, Coordinates } from 'foursquare';
+
+export interface LoginPayload {
     username: string;
     password: string;
 }
 
-interface RegisterPayload extends LoginPayload {
+export interface RegisterPayload extends LoginPayload {
     email: string;
 }
 
-interface OAuthPayload {
+export interface OAuthPayload {
     code: string;
     redirectUrl: string;
+}
+
+export interface FullList extends FsqList {
+    location: string | null;
+    coordinates: Coordinates | null;
 }

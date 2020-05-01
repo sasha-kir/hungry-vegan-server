@@ -1,6 +1,7 @@
 import { sql } from 'slonik';
-import db from '../../database';
-import { FsqList, FullFsqList } from 'foursquare';
+import db from '..';
+import { FsqList } from 'foursquare';
+import { FullList } from 'internal';
 
 export const saveInitialData = async (userId: string | number, listData: FsqList[]) => {
     const valuesList = listData.map(list => {
@@ -8,7 +9,7 @@ export const saveInitialData = async (userId: string | number, listData: FsqList
         return sql`(${valuesTuple})`;
     });
     await db.query(sql`
-        insert into foursquare_lists (user_id, list_id) 
+        insert into user_lists (user_id, list_id) 
         values ${sql.join(valuesList, sql`, `)}
         on conflict do nothing
     `);
@@ -17,18 +18,18 @@ export const saveInitialData = async (userId: string | number, listData: FsqList
 
 export const getListsData = async (userId: string | number) => {
     const lists = await db.many(sql`
-        select * from foursquare_lists
+        select * from user_lists
         where user_id = ${userId}
         order by list_id desc
     `);
     return lists;
 };
 
-export const updateListCities = async (userId: string | number, listData: FullFsqList[]) => {
+export const updateListLocations = async (userId: string | number, listData: FullList[]) => {
     const trxResult = await db.transaction(async trxConnection => {
         const updateQueries = listData.map(list =>
             trxConnection.query(sql`
-                update foursquare_lists set city = ${list.city}
+                update user_lists set location = ${list.location}
                 where list_id = ${list.id} and user_id = ${userId}
             `),
         );

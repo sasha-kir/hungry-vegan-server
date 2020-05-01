@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { OAuthPayload } from 'internal';
 import { checkToken } from '../../utils/jwt/tokens';
 import FoursquareService from '../../services/foursquare-service';
 

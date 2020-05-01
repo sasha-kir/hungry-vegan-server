@@ -4,7 +4,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 
 import * as foursquareAuth from './api/foursquare-auth';
-import * as foursquareLists from './api/foursquare-lists';
+import * as userLists from './api/user-lists';
 import * as user from './api/user-data';
 import * as auth from './api/authorization';
 
@@ -22,9 +22,9 @@ app.get('/foursquare-client-id', foursquareAuth.getClientID);
 app.post('/foursquare-connect', foursquareAuth.foursquareConnect);
 app.post('/foursquare-login', foursquareAuth.foursquareLogin);
 
-app.get('/user_lists', foursquareLists.getLists);
-app.post('/list_data', foursquareLists.getListById);
-app.post('/update_lists', foursquareLists.updateLists);
+app.get('/user_lists', userLists.getLists);
+app.post('/list_data', userLists.getListById);
+app.post('/update_lists', userLists.updateLists);
 
 app.get('/user_data', user.getUserData);
 app.post('/update_user', user.updateUserData);

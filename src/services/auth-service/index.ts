@@ -1,15 +1,12 @@
 import bcrypt from 'bcrypt';
-import { LoginPayload, RegisterPayload } from 'internal';
+import { LoginPayload, RegisterPayload, ServiceResponse } from 'internal';
 import { generateToken } from '../../utils/jwt';
 import UserQuery from '../../database/users';
 import * as LoginQuery from '../../database/login';
 
 const saltRounds = 10;
 
-interface AuthResponse {
-    token: string | null;
-    error: string | null;
-}
+type AuthResponse = ServiceResponse<string>;
 
 export const checkCredentials = async ({
     username,
@@ -17,18 +14,18 @@ export const checkCredentials = async ({
 }: LoginPayload): Promise<AuthResponse> => {
     const userRecord = await UserQuery.getUserByUsername(username);
     if (userRecord === null) {
-        return { error: 'wrong username or password', token: null };
+        return { error: 'wrong username or password', data: null };
     }
     const loginRecord = await LoginQuery.getPasswordByEmail(userRecord.email.toString());
     if (loginRecord === null) {
-        return { error: 'wrong username or password', token: null };
+        return { error: 'wrong username or password', data: null };
     }
     const isPassMatching = await bcrypt.compare(password, `${loginRecord.password}`);
     if (isPassMatching) {
         const token = generateToken(userRecord.email.toString());
-        return { token: token, error: null };
+        return { data: token, error: null };
     } else {
-        return { error: 'wrong username or password', token: null };
+        return { error: 'wrong username or password', data: null };
     }
 };
 
@@ -39,10 +36,10 @@ export const registerUser = async ({
 }: RegisterPayload): Promise<AuthResponse> => {
     const userRecord = await UserQuery.getUserByParams(username, email);
     if (userRecord !== null) {
-        return { error: 'user already exists', token: null };
+        return { error: 'user already exists', data: null };
     }
     const hash = bcrypt.hashSync(password, saltRounds);
     await UserQuery.createUserByEmail(username, email, hash);
     const token = generateToken(email);
-    return { token: token, error: null };
+    return { data: token, error: null };
 };

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { FsqList } from 'foursquare';
-import { FullList } from 'internal';
+import { FullList, ServiceResponse } from 'internal';
 import FoursquareClient from '../../clients/foursquare';
 import { getAccessTokenFromDb } from '../../utils/foursquare/accessToken';
 import UserQuery from '../../database/users';
@@ -10,17 +10,8 @@ import YandexClient from '../../clients/yandex';
 
 type MergedList = FsqList & Partial<ListRecord>;
 
-interface DefaultResponse {
-    error: string | null;
+interface ListResponse<T> extends ServiceResponse<T> {
     responseCode: number;
-}
-
-interface ListsResponse extends DefaultResponse {
-    data: FullList[] | null;
-}
-
-interface DetailsResponse extends DefaultResponse {
-    data: FsqList | null;
 }
 
 const mergeLists = async (userId: string | number, lists: FsqList[]): Promise<MergedList[]> => {
@@ -66,7 +57,7 @@ const prepareLists = async (userId: string | number, lists: FullList[]): Promise
     );
 };
 
-export const getLists = async (email: string): Promise<ListsResponse> => {
+export const getLists = async (email: string): Promise<ListResponse<FullList[]>> => {
     const userToken = await getAccessTokenFromDb(email);
     if (userToken === null) {
         return { data: null, error: 'user has no associated foursquare id', responseCode: 400 };
@@ -85,7 +76,10 @@ export const getLists = async (email: string): Promise<ListsResponse> => {
     return { data: normalizedData, error: null, responseCode: 200 };
 };
 
-export const getListDetails = async (email: string, listId: string): Promise<DetailsResponse> => {
+export const getListDetails = async (
+    email: string,
+    listId: string,
+): Promise<ListResponse<FsqList>> => {
     const userToken = await getAccessTokenFromDb(email);
     if (userToken === null) {
         return { data: null, error: 'user has no associated foursquare id', responseCode: 400 };
@@ -97,7 +91,10 @@ export const getListDetails = async (email: string, listId: string): Promise<Det
     return { data: data, error: null, responseCode: 200 };
 };
 
-export const updateLists = async (email: string, lists: FullList[]): Promise<ListsResponse> => {
+export const updateLists = async (
+    email: string,
+    lists: FullList[],
+): Promise<ListResponse<FullList[]>> => {
     const user = await UserQuery.getUserByEmail(email);
     if (user === null) {
         return { data: null, error: 'user not found in database', responseCode: 404 };

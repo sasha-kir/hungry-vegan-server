@@ -8,7 +8,7 @@ export const handleLogin = async (req: CustomRequest<LoginPayload>, res: Respons
         return res.status(400).json({ error: 'missing required fields in request' });
     }
     try {
-        const { token, error } = await AuthService.checkCredentials({ username, password });
+        const { data: token, error } = await AuthService.checkCredentials({ username, password });
         if (error !== null || token === null) {
             return res.status(401).json({ error });
         }
@@ -24,7 +24,11 @@ export const handleRegister = async (req: CustomRequest<RegisterPayload>, res: R
         return res.status(400).json({ error: 'missing required fields in request' });
     }
     try {
-        const { token, error } = await AuthService.registerUser({ username, email, password });
+        const { data: token, error } = await AuthService.registerUser({
+            username,
+            email,
+            password,
+        });
         if (error !== null || token === null) {
             return res.status(400).json({ error });
         }

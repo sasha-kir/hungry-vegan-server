@@ -10,6 +10,7 @@ export const setUserFoursquareId = async (email: string, foursquareId: number, t
         await trxConnection.query(sql`
             insert into access_tokens (foursquare_id, access_token)
             values (${foursquareId}, ${token})
+            on conflict do nothing
         `);
         return userInfo;
     });

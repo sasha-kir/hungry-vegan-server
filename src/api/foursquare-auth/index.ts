@@ -12,7 +12,7 @@ export const foursquareLogin = async (req: Request, res: Response) => {
         return res.status(400).json({ error: 'missing required params' });
     }
     try {
-        const { token, error, isEmailValid } = await FoursquareService.registerUser({
+        const { data: token, error, isEmailValid } = await FoursquareService.registerUser({
             code,
             redirectUrl,
         });
@@ -32,7 +32,11 @@ export const foursquareConnect = async (req: Request, res: Response) => {
         return res.status(400).json({ error: 'missing required params' });
     }
     try {
-        const { token, error } = await FoursquareService.connectUser({ code, redirectUrl, email });
+        const { data: token, error } = await FoursquareService.connectUser({
+            code,
+            redirectUrl,
+            email,
+        });
         if (error !== null || token === null) {
             return res.status(500).json({ error: error });
         }

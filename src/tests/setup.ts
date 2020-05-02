@@ -13,7 +13,7 @@ export const prepareTestUser = async (prefix: string): Promise<TestUser> => {
         email: `${prefix}_test@example.com`,
         password: 'test',
     };
-    const { token } = await AuthService.registerUser(user);
+    const { data: token } = await AuthService.registerUser(user);
     user.token = token;
     return user;
 };

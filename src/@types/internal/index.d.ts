@@ -1,14 +1,14 @@
 import { Request } from 'express';
 import { FsqList, Coordinates } from 'foursquare';
 
+export interface CustomRequest<T> extends Request {
+    body: T;
+}
+
 interface TokenPayload {
     email: string;
     iat: number;
     exp: number;
-}
-
-export interface CustomRequest<T> extends Request {
-    body: T;
 }
 
 export interface LoginPayload {
@@ -23,6 +23,11 @@ export interface RegisterPayload extends LoginPayload {
 export interface OAuthPayload {
     code: string;
     redirectUrl: string;
+}
+
+export interface ServiceResponse<T> {
+    data: T | null;
+    error: string | null;
 }
 
 export interface FullList extends FsqList {

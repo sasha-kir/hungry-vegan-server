@@ -3,7 +3,7 @@ import * as UserService from '../../services/user-service';
 
 export const getUserData = async (req: Request, res: Response) => {
     try {
-        const { user, error: dataError } = await UserService.getUser(req.user.email);
+        const { data: user, error: dataError } = await UserService.getUser(req.user.email);
         if (dataError !== null || user === null) {
             return res.status(404).json({ error: dataError });
         }
@@ -20,7 +20,11 @@ export const updateUserData = async (req: Request, res: Response) => {
         return res.status(400).json({ error: 'received invalid user data' });
     }
     try {
-        const { user, error, token } = await UserService.updateUser(username, currentEmail, email);
+        const { data: user, error, token } = await UserService.updateUser(
+            username,
+            currentEmail,
+            email,
+        );
         if (error !== null || user === null || token === undefined) {
             return res.status(404).json({ error });
         }

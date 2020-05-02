@@ -24,14 +24,3 @@ export const decodeToken = (token: string): DecodeResponse => {
         return { email: null, error: error.message };
     }
 };
-
-export const checkToken = (token: string | undefined): DecodeResponse => {
-    if (token === undefined) {
-        return { email: null, error: 'missing auth token' };
-    }
-    const decoded = decodeToken(token);
-    if (decoded.error !== null || decoded.email === null) {
-        return { email: null, error: 'invalid auth token' };
-    }
-    return { email: decoded.email, error: null };
-};

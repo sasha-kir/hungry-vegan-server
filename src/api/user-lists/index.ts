@@ -1,15 +1,9 @@
 import { Request, Response } from 'express';
-
-import { checkToken } from '../../utils/jwt/tokens';
 import * as ListsService from '../../services/lists-service';
 
 export const getLists = async (req: Request, res: Response) => {
-    const { email, error: tokenError } = checkToken(req.header('Authentication'));
-    if (tokenError !== null || email === null) {
-        return res.status(401).json({ error: tokenError });
-    }
     try {
-        const { data, error, responseCode } = await ListsService.getLists(email);
+        const { data, error, responseCode } = await ListsService.getLists(req.user.email);
         if (error !== null || data === null) {
             return res.status(responseCode).json({ error: error });
         }
@@ -20,10 +14,7 @@ export const getLists = async (req: Request, res: Response) => {
 };
 
 export const getListById = async (req: Request, res: Response) => {
-    const { email, error: tokenError } = checkToken(req.header('Authentication'));
-    if (tokenError !== null || email === null) {
-        return res.status(401).json({ error: tokenError });
-    }
+    const { email } = req.user;
     const { listId } = req.body;
     if (listId === undefined) {
         return res.status(400).json({ error: 'no listId was provided' });
@@ -40,10 +31,7 @@ export const getListById = async (req: Request, res: Response) => {
 };
 
 export const updateLists = async (req: Request, res: Response) => {
-    const { email, error: tokenError } = checkToken(req.header('Authentication'));
-    if (tokenError !== null || email === null) {
-        return res.status(401).json({ error: tokenError });
-    }
+    const { email } = req.user;
     const { lists } = req.body;
     if (lists === undefined) {
         return res.status(400).json({ error: 'nothing to update: no lists in request' });

@@ -1,10 +1,6 @@
-import { Request, Response } from 'express';
-import { LoginPayload, RegisterPayload } from 'internal';
+import { Response } from 'express';
+import { CustomRequest, LoginPayload, RegisterPayload } from 'internal';
 import * as AuthService from '../../services/auth-service';
-
-interface CustomRequest<T> extends Request {
-    body: T;
-}
 
 export const handleLogin = async (req: CustomRequest<LoginPayload>, res: Response) => {
     const { username, password } = req.body;

@@ -1,14 +1,9 @@
 import { Request, Response } from 'express';
-import { checkToken } from '../../utils/jwt/tokens';
 import * as UserService from '../../services/user-service';
 
 export const getUserData = async (req: Request, res: Response) => {
-    const { email, error } = checkToken(req.header('Authentication'));
-    if (error !== null || email === null) {
-        return res.status(401).json({ error });
-    }
     try {
-        const { user, error: dataError } = await UserService.getUser(email);
+        const { user, error: dataError } = await UserService.getUser(req.user.email);
         if (dataError !== null || user === null) {
             return res.status(404).json({ error: dataError });
         }
@@ -19,12 +14,9 @@ export const getUserData = async (req: Request, res: Response) => {
 };
 
 export const updateUserData = async (req: Request, res: Response) => {
-    const { email: currentEmail, error: tokenError } = checkToken(req.header('Authentication'));
-    if (tokenError !== null || currentEmail === null) {
-        return res.status(401).json({ error: tokenError });
-    }
+    const currentEmail = req.user.email;
     const { username, email } = req.body;
-    if (username === undefined || email === undefined || email === '') {
+    if (username === undefined || !email) {
         return res.status(400).json({ error: 'received invalid user data' });
     }
     try {

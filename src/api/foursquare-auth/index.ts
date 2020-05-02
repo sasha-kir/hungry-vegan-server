@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { OAuthPayload } from 'internal';
-import { checkToken } from '../../utils/jwt/tokens';
 import FoursquareService from '../../services/foursquare-service';
 
 export const getClientID = (_req: Request, res: Response) => {
@@ -27,10 +26,7 @@ export const foursquareLogin = async (req: Request, res: Response) => {
 };
 
 export const foursquareConnect = async (req: Request, res: Response) => {
-    const { email, error: tokenError } = checkToken(req.header('Authentication'));
-    if (tokenError !== null || email === null) {
-        return res.status(401).json({ error: tokenError });
-    }
+    const { email } = req.user;
     const { code, redirectUrl }: OAuthPayload = req.body;
     if (code === undefined || redirectUrl === undefined) {
         return res.status(400).json({ error: 'missing required params' });

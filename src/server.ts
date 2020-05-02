@@ -1,7 +1,8 @@
-/* eslint-disable no-console */
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import { checkToken } from './middlewares/jwt';
+import { handleUnauthorized } from './middlewares/errorHandler';
 
 import * as foursquareAuth from './api/foursquare-auth';
 import * as userLists from './api/user-lists';
@@ -13,14 +14,16 @@ const port = 5000;
 
 app.use(bodyParser.json());
 app.use(cors());
+app.use(checkToken());
+app.use(handleUnauthorized());
 
 app.get('/', (_req, res) => {
     res.send('Hungry Vegan API is up and running');
 });
 
-app.get('/foursquare-client-id', foursquareAuth.getClientID);
-app.post('/foursquare-connect', foursquareAuth.foursquareConnect);
-app.post('/foursquare-login', foursquareAuth.foursquareLogin);
+app.get('/oauth_id', foursquareAuth.getClientID);
+app.post('/foursquare_login', foursquareAuth.foursquareLogin);
+app.post('/foursquare_connect', foursquareAuth.foursquareConnect);
 
 app.get('/user_lists', userLists.getLists);
 app.post('/list_data', userLists.getListById);

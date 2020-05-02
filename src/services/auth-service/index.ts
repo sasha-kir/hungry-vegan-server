@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { LoginPayload, RegisterPayload } from 'internal';
-import { generateToken } from '../../utils/jwt/tokens';
+import { generateToken } from '../../utils/jwt';
 import UserQuery from '../../database/users';
 import * as LoginQuery from '../../database/login';
 

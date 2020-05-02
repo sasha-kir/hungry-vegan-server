@@ -1,4 +1,4 @@
-import { generateToken } from '../../utils/jwt/tokens';
+import { generateToken } from '../../utils/jwt';
 import UserQuery from '../../database/users';
 import { UserRecord } from '../../generated/db';
 

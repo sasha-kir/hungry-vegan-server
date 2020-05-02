@@ -1,4 +1,15 @@
+import { Request } from 'express';
 import { FsqList, Coordinates } from 'foursquare';
+
+interface TokenPayload {
+    email: string;
+    iat: number;
+    exp: number;
+}
+
+export interface CustomRequest<T> extends Request {
+    body: T;
+}
 
 export interface LoginPayload {
     username: string;

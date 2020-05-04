@@ -1,10 +1,10 @@
 import { FsqApiUser, FsqApiList, FsqApiVenueLocation } from 'foursquare-api';
 
-type Coordinates = { latitude: number; longitude: number };
+type ListCoordinates = { latitude: number; longitude: number };
 
 export interface FsqVenueLocation extends Partial<FsqApiVenueLocation> {
     countryCode: string;
-    coordinates: Coordinates;
+    coordinates: ListCoordinates;
 }
 
 export interface FsqListItem {

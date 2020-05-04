@@ -30,6 +30,7 @@ app.post('/list_data', userLists.getListById);
 app.post('/update_lists', userLists.updateLists);
 
 app.get('/user_data', user.getUserData);
+app.post('/user_location', user.getUserLocation);
 app.post('/update_user', user.updateUserData);
 
 app.post('/login', auth.handleLogin);

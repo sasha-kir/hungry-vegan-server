@@ -13,6 +13,25 @@ export const getUserData = async (req: Request, res: Response) => {
     }
 };
 
+export const getUserLocation = async (req: Request, res: Response) => {
+    const { latitude, longitude } = req.body;
+    if (!latitude || !longitude) {
+        return res.status(400).json({ error: 'received invalid user coordinates' });
+    }
+    try {
+        const { data: location, error } = await UserService.getUserLocation({
+            latitude,
+            longitude,
+        });
+        if (error !== null || location === null) {
+            return res.status(500).json({ error });
+        }
+        return res.json({ location });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
 export const updateUserData = async (req: Request, res: Response) => {
     const currentEmail = req.user.email;
     const { username, email } = req.body;

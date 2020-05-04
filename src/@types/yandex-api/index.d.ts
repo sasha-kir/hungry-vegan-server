@@ -14,6 +14,7 @@ interface GeocoderMetaData {
     Address: Address;
     AddressDetails: object;
 }
+
 interface GeoObjectMetaData {
     GeocoderMetaData: GeocoderMetaData;
 }

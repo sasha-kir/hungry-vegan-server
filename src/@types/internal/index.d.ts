@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { FsqList, Coordinates } from 'foursquare';
+import { FsqList, ListCoordinates } from 'foursquare';
 
 export interface CustomRequest<T> extends Request {
     body: T;
@@ -32,11 +32,12 @@ export interface ServiceResponse<T> {
 
 export interface FullList extends FsqList {
     location: string;
-    coordinates: Coordinates | null;
+    coordinates: ListCoordinates | null;
 }
 
-export interface ListMetaData {
+export interface LocationMetaData {
     location: string;
-    coordinates: Coordinates;
+    description: string;
+    coordinates: ListCoordinates;
     countryCode: string;
 }

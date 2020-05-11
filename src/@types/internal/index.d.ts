@@ -1,6 +1,8 @@
 import { Request } from 'express';
 import { FsqList, ListCoordinates } from 'foursquare';
 
+export type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>;
+
 export interface CustomRequest<T> extends Request {
     body: T;
 }
@@ -9,6 +11,10 @@ interface TokenPayload {
     email: string;
     iat: number;
     exp: number;
+}
+
+export interface AuthorizedRequest extends Request {
+    user?: TokenPayload;
 }
 
 export interface LoginPayload {

@@ -1,12 +1,16 @@
-import { setupTypeGen } from '@slonik/typegen';
+import typegenDefault, * as typegenNamespace from '@slonik/typegen';
+import slonikDefault, * as slonikNamespace from 'slonik';
 import { knownTypes } from '../generated/db';
-import { createPool } from 'slonik';
+
 // import { createFieldNameTransformationInterceptor } from 'slonik-interceptor-field-name-transformation';
 import config from '../config';
 
 const env = process.env.NODE_ENV || 'development';
 
-export const { sql, poolConfig } = setupTypeGen({
+const slonikTypegen = env === 'production' ? typegenDefault : typegenNamespace;
+const slonik = env === 'production' ? slonikDefault : slonikNamespace;
+
+export const { sql, poolConfig } = slonikTypegen.setupTypeGen({
     knownTypes,
     writeTypes: env !== 'production' && process.cwd() + '/src/generated/db',
 });
@@ -22,7 +26,7 @@ export const { sql, poolConfig } = setupTypeGen({
 //     interceptors = [...interceptors, ...poolConfig.interceptors];
 // }
 
-const db = createPool(config[env].database, {
+const db = slonik.createPool(config[env].database, {
     typeParsers: poolConfig.typeParsers,
     interceptors: poolConfig.interceptors,
 });

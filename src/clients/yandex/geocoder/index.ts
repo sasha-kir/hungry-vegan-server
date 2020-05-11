@@ -1,4 +1,5 @@
 import { GeoObject } from 'yandex-api';
+import { ListCoordinates } from 'foursquare';
 import { LocationMetaData } from 'internal';
 import { geocoderApi } from '..';
 

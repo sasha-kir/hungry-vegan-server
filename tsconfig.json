@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "target": "es6",
-        "module": "commonjs",
+        "target": "esnext",
+        //"module": "esnext",
         "esModuleInterop": true,
         "moduleResolution": "node",
         "outDir": "dist",
@@ -12,7 +12,6 @@
         "strict": true,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true,
-        "noEmit": true,
         "noImplicitAny": false,
         "noUnusedLocals": true,
         "noUnusedParameters": true,

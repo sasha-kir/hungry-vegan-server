@@ -1,9 +1,9 @@
-import { promiseApi as initCryptus } from 'cryptus';
+import initCryptus from 'cryptus';
 
 import UserQuery from '../../database/users';
 import * as TokenQuery from '../../database/access-tokens';
 
-const cryptus = initCryptus();
+const cryptus = initCryptus.promiseApi();
 
 export const encryptToken = async (accessToken: string): Promise<string> => {
     return await cryptus.encrypt(process.env.CRYPTUS_KEY, accessToken);

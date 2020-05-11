@@ -1,4 +1,5 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 interface Config {
     database: string;
@@ -10,6 +11,9 @@ const config: { [key: string]: Config } = {
     },
     test: {
         database: process.env.TEST_DATABASE_URL,
+    },
+    production: {
+        database: process.env.DATABASE_URL,
     },
 };
 

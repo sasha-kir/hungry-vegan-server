@@ -1,9 +1,11 @@
 import { Request, Response } from 'express';
+import { AuthorizedRequest, TokenPayload } from 'internal';
 import * as UserService from '../../services/user-service';
 
-export const getUserData = async (req: Request, res: Response) => {
+export const getUserData = async (req: AuthorizedRequest, res: Response) => {
+    const { email } = req.user as TokenPayload;
     try {
-        const { data: user, error: dataError } = await UserService.getUser(req.user.email);
+        const { data: user, error: dataError } = await UserService.getUser(email);
         if (dataError !== null || user === null) {
             return res.status(404).json({ error: dataError });
         }
@@ -32,8 +34,8 @@ export const getUserLocation = async (req: Request, res: Response) => {
     }
 };
 
-export const updateUserData = async (req: Request, res: Response) => {
-    const currentEmail = req.user.email;
+export const updateUserData = async (req: AuthorizedRequest, res: Response) => {
+    const { email: currentEmail } = req.user as TokenPayload;
     const { username, email } = req.body;
     if (username === undefined || !email) {
         return res.status(400).json({ error: 'received invalid user data' });

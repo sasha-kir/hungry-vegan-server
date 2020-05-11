@@ -1,9 +1,11 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { AuthorizedRequest, TokenPayload } from 'internal';
 import * as ListsService from '../../services/lists-service';
 
-export const getLists = async (req: Request, res: Response) => {
+export const getLists = async (req: AuthorizedRequest, res: Response) => {
+    const { email } = req.user as TokenPayload;
     try {
-        const { data, error, responseCode } = await ListsService.getLists(req.user.email);
+        const { data, error, responseCode } = await ListsService.getLists(email);
         if (error !== null || data === null) {
             return res.status(responseCode).json({ error: error });
         }
@@ -13,8 +15,8 @@ export const getLists = async (req: Request, res: Response) => {
     }
 };
 
-export const getListById = async (req: Request, res: Response) => {
-    const { email } = req.user;
+export const getListById = async (req: AuthorizedRequest, res: Response) => {
+    const { email } = req.user as TokenPayload;
     const { listId } = req.body;
     if (listId === undefined) {
         return res.status(400).json({ error: 'no listId was provided' });
@@ -30,8 +32,8 @@ export const getListById = async (req: Request, res: Response) => {
     }
 };
 
-export const updateLists = async (req: Request, res: Response) => {
-    const { email } = req.user;
+export const updateLists = async (req: AuthorizedRequest, res: Response) => {
+    const { email } = req.user as TokenPayload;
     const { lists } = req.body;
     if (lists === undefined) {
         return res.status(400).json({ error: 'nothing to update: no lists in request' });

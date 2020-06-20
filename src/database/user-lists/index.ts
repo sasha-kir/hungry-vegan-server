@@ -4,11 +4,12 @@ import { FullList } from 'internal';
 
 export const saveInitialData = async (userId: string | number, listData: FsqList[]) => {
     const valuesList = listData.map(list => {
-        const valuesTuple = sql.join([userId, list.id], sql`, `);
+        const listName = String(list.name).toLowerCase();
+        const valuesTuple = sql.join([userId, listName, list.id], sql`, `);
         return sql`(${valuesTuple})`;
     });
     await db.query(sql`
-        insert into user_lists (user_id, list_id) 
+        insert into user_lists (user_id, list_name, list_id) 
         values ${sql.join(valuesList, sql`, `)}
         on conflict do nothing
     `);
@@ -22,6 +23,15 @@ export const getListsData = async (userId: string | number) => {
         order by list_id desc
     `);
     return lists;
+};
+
+export const getUserList = async (userId: string | number, listName: string) => {
+    const list = await db.maybeOne(sql.ListRecord`
+        select * from user_lists
+        where user_id = ${userId}
+        and list_name = ${listName}
+    `);
+    return list;
 };
 
 export const updateListLocations = async (userId: string | number, listData: FullList[]) => {

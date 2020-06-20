@@ -15,14 +15,14 @@ export const getLists = async (req: AuthorizedRequest, res: Response) => {
     }
 };
 
-export const getListById = async (req: AuthorizedRequest, res: Response) => {
+export const getListData = async (req: AuthorizedRequest, res: Response) => {
     const { email } = req.user as TokenPayload;
-    const { listId } = req.body;
-    if (listId === undefined) {
-        return res.status(400).json({ error: 'no listId was provided' });
+    const { listName } = req.body;
+    if (listName === undefined) {
+        return res.status(400).json({ error: 'no listName was provided' });
     }
     try {
-        const { data, error, responseCode } = await ListsService.getListDetails(email, listId);
+        const { data, error, responseCode } = await ListsService.getListDetails(email, listName);
         if (error !== null || data === null) {
             return res.status(responseCode).json({ error: error });
         }

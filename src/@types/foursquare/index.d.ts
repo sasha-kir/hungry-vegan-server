@@ -13,9 +13,10 @@ export interface FsqListItem {
     name: string;
     addedAt: number;
     location: FsqVenueLocation;
+    instagram: string | null;
 }
 
-export interface FsqList extends AtLeast<FsqApiList, 'id'> {
+export interface FsqList extends AtLeast<FsqApiList, 'id' | 'name'> {
     itemsCount: number;
     items?: FsqListItem[];
 }

@@ -15,6 +15,10 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
                 type: 'varchar(300)',
                 notNull: true,
             },
+            list_name: {
+                type: 'varchar(300)',
+                notNull: true,
+            },
             location: {
                 type: 'text',
             },

@@ -14,10 +14,6 @@ export const getListData = async (accessToken: string, listId: string): Promise<
         });
         const fullList: FsqApiList = data.response.list as FsqApiList;
 
-        if (fullList.listItems.items === undefined) {
-            return { data: null, error: 'no list items data found' };
-        }
-
         return { data: fullList, error: null };
     } catch (error) {
         return { data: null, error: error.message };

@@ -8,6 +8,8 @@ export type ListRecord_AllTypes = [
     user_id: string
     /** pg_type.typname: varchar */
     list_id: string
+    /** pg_type.typname: varchar */
+    list_name: string
     /** pg_type.typname: text */
     location: string
     /** pg_type.typname: float4 */
@@ -27,6 +29,9 @@ export type ListRecord_AllTypes = [
 export interface ListRecord_QueryTypeMap {
   [`select * from user_lists
           where user_id = $1
+          and list_name = $2`]: ListRecord_AllTypes[0]
+  [`select * from user_lists
+          where user_id = $1
           order by list_id desc`]: ListRecord_AllTypes[0]
   [`select location, lat, lon from user_lists
           where user_id = $1
@@ -40,4 +45,4 @@ export type ListRecord = {
 }
 export const ListRecord = {} as ListRecord
 
-export const ListRecord_meta_v0 = [{"properties":[{"name":"user_id","value":"string","description":"pg_type.typname: varchar"},{"name":"list_id","value":"string","description":"pg_type.typname: varchar"},{"name":"location","value":"string","description":"pg_type.typname: text"},{"name":"lat","value":"unknown","description":"pg_type.typname: float4"},{"name":"lon","value":"unknown","description":"pg_type.typname: float4"}],"description":"select * from user_lists\n        where user_id = $1\n        order by list_id desc"},{"properties":[{"name":"location","value":"string","description":"pg_type.typname: text"},{"name":"lat","value":"unknown","description":"pg_type.typname: float4"},{"name":"lon","value":"unknown","description":"pg_type.typname: float4"}],"description":"select location, lat, lon from user_lists\n        where user_id = $1\n        order by list_id desc"}]
+export const ListRecord_meta_v0 = [{"properties":[{"name":"user_id","value":"string","description":"pg_type.typname: varchar"},{"name":"list_id","value":"string","description":"pg_type.typname: varchar"},{"name":"list_name","value":"string","description":"pg_type.typname: varchar"},{"name":"location","value":"string","description":"pg_type.typname: text"},{"name":"lat","value":"unknown","description":"pg_type.typname: float4"},{"name":"lon","value":"unknown","description":"pg_type.typname: float4"}],"description":"select * from user_lists\n        where user_id = $1\n        and list_name = $2"},{"properties":[{"name":"user_id","value":"string","description":"pg_type.typname: varchar"},{"name":"list_id","value":"string","description":"pg_type.typname: varchar"},{"name":"list_name","value":"string","description":"pg_type.typname: varchar"},{"name":"location","value":"string","description":"pg_type.typname: text"},{"name":"lat","value":"unknown","description":"pg_type.typname: float4"},{"name":"lon","value":"unknown","description":"pg_type.typname: float4"}],"description":"select * from user_lists\n        where user_id = $1\n        order by list_id desc"},{"properties":[{"name":"location","value":"string","description":"pg_type.typname: text"},{"name":"lat","value":"unknown","description":"pg_type.typname: float4"},{"name":"lon","value":"unknown","description":"pg_type.typname: float4"}],"description":"select location, lat, lon from user_lists\n        where user_id = $1\n        order by list_id desc"}]

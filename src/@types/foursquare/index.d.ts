@@ -23,7 +23,7 @@ export interface FsqList extends AtLeast<FsqApiList, 'id'> {
 export type FsqUser = Partial<FsqApiUser>;
 
 export interface FsqListData {
-    data: FsqList | null;
+    data: FsqApiList | null;
     error: string | null;
 }
 

@@ -1,22 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { FsqApiList, FsqApiVenueLocation, FsqApiListItem } from 'foursquare-api';
-import { FsqListData, FsqList, FsqListItem, FsqVenueLocation } from 'foursquare';
+import { FsqApiList } from 'foursquare-api';
+import { FsqListData } from 'foursquare';
 import { foursquareApi } from '..';
-
-const normalizeLocation = (location: FsqApiVenueLocation): FsqVenueLocation => ({
-    address: location.address,
-    coordinates: { latitude: location.lat, longitude: location.lng },
-    countryCode: location.cc,
-    city: location.city,
-    country: location.country,
-});
-
-const normalizeListItem = (item: FsqApiListItem): FsqListItem => ({
-    id: item.venue.id,
-    name: item.venue.name,
-    addedAt: item.createdAt,
-    location: normalizeLocation(item.venue.location),
-});
 
 export const getListData = async (accessToken: string, listId: string): Promise<FsqListData> => {
     const url = `lists/${listId}`;
@@ -33,13 +18,7 @@ export const getListData = async (accessToken: string, listId: string): Promise<
             return { data: null, error: 'no list items data found' };
         }
 
-        const list: FsqList = {
-            id: fullList.id,
-            itemsCount: fullList.listItems.count,
-            items: fullList.listItems.items.map(item => normalizeListItem(item)),
-        };
-
-        return { data: list, error: null };
+        return { data: fullList, error: null };
     } catch (error) {
         return { data: null, error: error.message };
     }

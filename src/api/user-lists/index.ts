@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { AuthorizedRequest, TokenPayload } from 'internal';
-import * as ListsService from '../../services/lists-service';
+import ListsService from '../../services/lists-service';
 
 export const getLists = async (req: AuthorizedRequest, res: Response) => {
     const { email } = req.user as TokenPayload;

@@ -5,12 +5,14 @@ import {ListRecord} from './ListRecord'
 import {LoginRecord} from './LoginRecord'
 import {TokenRecord} from './TokenRecord'
 import {UserRecord} from './UserRecord'
+import {VenueRecord} from './VenueRecord'
 import {_pg_types} from './_pg_types'
 
 export {ListRecord}
 export {LoginRecord}
 export {TokenRecord}
 export {UserRecord}
+export {VenueRecord}
 export {_pg_types}
 
 export interface KnownTypes {
@@ -18,6 +20,7 @@ export interface KnownTypes {
   LoginRecord: LoginRecord
   TokenRecord: TokenRecord
   UserRecord: UserRecord
+  VenueRecord: VenueRecord
   _pg_types: _pg_types
 }
 
@@ -27,5 +30,6 @@ export const knownTypes: KnownTypes = {
   LoginRecord,
   TokenRecord,
   UserRecord,
+  VenueRecord,
   _pg_types,
 }

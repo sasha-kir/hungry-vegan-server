@@ -12,12 +12,16 @@ export interface FsqListItem {
     id: string;
     name: string;
     addedAt: number;
+    updatedAt: number;
     location: FsqVenueLocation;
     instagram: string | null;
+    onlyDelivery: boolean;
+    onlyTakeaway: boolean;
 }
 
 export interface FsqList extends AtLeast<FsqApiList, 'id' | 'name'> {
     itemsCount: number;
+    coordinates: ListCoordinates | null;
     items?: FsqListItem[];
 }
 

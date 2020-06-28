@@ -38,7 +38,6 @@ export interface ServiceResponse<T> {
 
 export interface FullList extends FsqList {
     location: string;
-    coordinates: ListCoordinates | null;
 }
 
 export interface LocationMetaData {

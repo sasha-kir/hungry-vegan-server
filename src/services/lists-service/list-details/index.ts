@@ -4,6 +4,7 @@ import { FsqApiListItem, FsqApiVenueLocation } from 'foursquare-api';
 import FoursquareClient from '../../../clients/foursquare';
 import UserQuery from '../../../database/users';
 import * as ListQuery from '../../../database/user-lists';
+import * as VenuesQuery from '../../../database/list-venues';
 import { getAccessTokenFromDb } from '../../../utils/foursquare/accessToken';
 import { ListResponse } from '..';
 
@@ -15,14 +16,27 @@ const normalizeLocation = (location: FsqApiVenueLocation): FsqVenueLocation => (
     country: location.country,
 });
 
-const normalizeListItem = (item: FsqApiListItem): FsqListItem => {
-    return {
-        id: item.venue.id,
-        name: item.venue.name,
-        addedAt: item.createdAt,
-        location: normalizeLocation(item.venue.location),
-        instagram: null,
-    };
+const normalizeItems = async (
+    userId: string | number,
+    listId: string,
+    items: FsqApiListItem[],
+): Promise<FsqListItem[]> => {
+    const sortedData = items.sort((a, b) => b.venue.id.localeCompare(a.venue.id));
+    const dbVenuesData = await VenuesQuery.getListVenues(userId, listId);
+    const normalized = sortedData.map((item, i) => {
+        const { instagram, only_delivery, only_takeaway, updated_at } = dbVenuesData[i];
+        return {
+            id: item.venue.id,
+            name: item.venue.name,
+            addedAt: item.createdAt,
+            updatedAt: +updated_at,
+            location: normalizeLocation(item.venue.location),
+            instagram: instagram ? String(instagram) : null,
+            onlyDelivery: Boolean(only_delivery),
+            onlyTakeaway: Boolean(only_takeaway),
+        };
+    });
+    return normalized;
 };
 
 export const getListDetails = async (
@@ -41,21 +55,31 @@ export const getListDetails = async (
     if (listData === null) {
         return { data: null, error: 'list data not found', responseCode: 404 };
     }
+
+    const { lat, lon } = listData;
+    const listCoords = lat && lon ? { latitude: Number(lat), longitude: Number(lon) } : null;
+
     const { data, error } = await FoursquareClient.getListData(userToken, listData['list_id']);
 
     if (error !== null || data === null) {
         return { data: null, error: error, responseCode: 500 };
     }
 
-    if (data.listItems.items === undefined) {
+    const listItems = data?.listItems?.items;
+    if (listItems === undefined) {
         return { data: null, error: 'no list items data found', responseCode: 404 };
     }
+
+    await VenuesQuery.saveInitialData(user.id, data.id, listItems);
+
+    const normalizedItems = await normalizeItems(user.id, data.id, listItems);
 
     const list: FsqList = {
         id: data.id,
         name: data.name,
+        coordinates: listCoords,
         itemsCount: data.listItems.count,
-        items: data.listItems.items.map(item => normalizeListItem(item)),
+        items: normalizedItems,
     };
 
     return { data: list, error: null, responseCode: 200 };

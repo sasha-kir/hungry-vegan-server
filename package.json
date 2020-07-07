@@ -50,7 +50,7 @@
         "@types/jsonwebtoken": "8.5.0",
         "@types/node": "13.13.13",
         "@types/pg": "7.14.3",
-        "@types/prettier": "2.0.1",
+        "@types/prettier": "2.0.2",
         "@types/roarr": "2.14.2",
         "@types/slonik": "22.1.2",
         "@types/source-map-support": "0.5.1",

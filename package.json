@@ -48,7 +48,7 @@
         "@types/jest": "26.0.4",
         "@types/jsdom": "16.2.3",
         "@types/jsonwebtoken": "8.5.0",
-        "@types/node": "13.13.13",
+        "@types/node": "13.13.14",
         "@types/pg": "7.14.4",
         "@types/prettier": "2.0.2",
         "@types/roarr": "2.14.2",

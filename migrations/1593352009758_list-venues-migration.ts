@@ -34,6 +34,10 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
                 type: 'boolean',
                 default: false,
             },
+            maybe_closed: {
+                type: 'boolean',
+                default: false,
+            },
             updated_at: {
                 type: 'timestamp',
                 notNull: true,

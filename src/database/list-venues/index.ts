@@ -1,4 +1,5 @@
 import db, { sql } from '..';
+import { FsqVenueDetails } from 'foursquare';
 import { FsqApiListItem } from 'foursquare-api';
 
 export const saveInitialData = async (
@@ -26,4 +27,18 @@ export const getListVenues = async (userId: string | number, listId: string) => 
         order by venue_id desc
     `);
     return venues;
+};
+
+export const updateVenueDetails = async (venueDetails: FsqVenueDetails) => {
+    const venue = await db.maybeOne(sql.VenueRecord`
+        update list_venues
+        set instagram = ${venueDetails.instagram},
+        only_delivery = ${venueDetails.onlyDelivery},
+        only_takeaway = ${venueDetails.onlyTakeaway},
+        maybe_closed = ${venueDetails.maybeClosed},
+        updated_at = now()
+        where venue_id = ${venueDetails.id}
+        returning *
+    `);
+    return venue;
 };

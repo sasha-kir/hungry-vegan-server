@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { FsqList, FsqListItem, FsqVenueLocation } from 'foursquare';
+import { FsqList, FsqListItem, FsqVenueLocation, FsqVenueDetails } from 'foursquare';
 import { FsqApiListItem, FsqApiVenueLocation } from 'foursquare-api';
 import FoursquareClient from '../../../clients/foursquare';
 import UserQuery from '../../../database/users';
@@ -24,16 +24,21 @@ const normalizeItems = async (
     const sortedData = items.sort((a, b) => b.venue.id.localeCompare(a.venue.id));
     const dbVenuesData = await VenuesQuery.getListVenues(userId, listId);
     const normalized = sortedData.map((item, i) => {
-        const { instagram, only_delivery, only_takeaway, updated_at } = dbVenuesData[i];
+        const { instagram, only_delivery, only_takeaway, maybe_closed, updated_at } = dbVenuesData[
+            i
+        ];
+        const location = normalizeLocation(item.venue.location);
         return {
             id: item.venue.id,
             name: item.venue.name,
             addedAt: item.createdAt,
             updatedAt: +updated_at,
-            location: normalizeLocation(item.venue.location),
+            location: location,
+            coordinates: location.coordinates,
             instagram: instagram ? String(instagram) : null,
             onlyDelivery: Boolean(only_delivery),
             onlyTakeaway: Boolean(only_takeaway),
+            maybeClosed: Boolean(maybe_closed),
         };
     });
     return normalized;
@@ -83,4 +88,19 @@ export const getListDetails = async (
     };
 
     return { data: list, error: null, responseCode: 200 };
+};
+
+export const updateVenueDetails = async (
+    email: string,
+    newDetails: FsqVenueDetails,
+): Promise<ListResponse<FsqList>> => {
+    const updatedVenue = await VenuesQuery.updateVenueDetails(newDetails);
+    if (!updatedVenue) {
+        return { data: null, error: 'venue update unsuccessful', responseCode: 500 };
+    }
+    const listData = await ListQuery.getListById(String(updatedVenue['list_id']));
+    if (!listData) {
+        return { data: null, error: 'list dat not found', responseCode: 404 };
+    }
+    return await getListDetails(email, String(listData['list_name']));
 };

@@ -8,15 +8,20 @@ export interface FsqVenueLocation extends Partial<FsqApiVenueLocation> {
     coordinates: ListCoordinates;
 }
 
-export interface FsqListItem {
+export interface FsqVenueDetails {
     id: string;
+    instagram: string | null;
+    onlyDelivery: boolean;
+    onlyTakeaway: boolean;
+    maybeClosed: boolean;
+}
+
+export interface FsqListItem extends FsqVenueDetails {
     name: string;
     addedAt: number;
     updatedAt: number;
     location: FsqVenueLocation;
-    instagram: string | null;
-    onlyDelivery: boolean;
-    onlyTakeaway: boolean;
+    coordinates: ListCoordinates;
 }
 
 export interface FsqList extends AtLeast<FsqApiList, 'id' | 'name'> {

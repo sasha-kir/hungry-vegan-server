@@ -3,7 +3,7 @@ import { FsqList } from 'foursquare';
 import { FullList } from 'internal';
 
 export const saveInitialData = async (userId: string | number, listData: FsqList[]) => {
-    const valuesList = listData.map(list => {
+    const valuesList = listData.map((list) => {
         const listName = String(list.name).toLowerCase();
         const valuesTuple = sql.join([userId, listName, list.id], sql`, `);
         return sql`(${valuesTuple})`;
@@ -34,9 +34,17 @@ export const getUserList = async (userId: string | number, listName: string) => 
     return list;
 };
 
+export const getListById = async (listId: string) => {
+    const list = await db.maybeOne(sql.ListRecord`
+        select * from user_lists
+        where list_id = ${listId}
+    `);
+    return list;
+};
+
 export const updateListLocations = async (userId: string | number, listData: FullList[]) => {
-    const trxResult = await db.transaction(async trxConnection => {
-        const updateQueries = listData.map(list => {
+    const trxResult = await db.transaction(async (trxConnection) => {
+        const updateQueries = listData.map((list) => {
             const lat = list.coordinates ? list.coordinates.latitude : null;
             const lon = list.coordinates ? list.coordinates.longitude : null;
             return trxConnection.query(sql`

@@ -34,6 +34,8 @@ export type VenueRecord_AllTypes = [
     only_takeaway: boolean
     /** pg_type.typname: timestamp */
     updated_at: unknown
+    /** pg_type.typname: bool */
+    maybe_closed: boolean
   }
 ]
 export interface VenueRecord_QueryTypeMap {
@@ -44,6 +46,14 @@ export interface VenueRecord_QueryTypeMap {
           where user_id = $1
           and list_id = $2
           order by venue_id desc`]: VenueRecord_AllTypes[1]
+  [`update list_venues
+          set instagram = $1,
+          only_delivery = $2,
+          only_takeaway = $3,
+          maybe_closed = $4,
+          updated_at = now()
+          where venue_id = $5
+          returning *`]: VenueRecord_AllTypes[1]
 }
 
 export type VenueRecord_UnionType = VenueRecord_QueryTypeMap[keyof VenueRecord_QueryTypeMap]
@@ -53,4 +63,4 @@ export type VenueRecord = {
 }
 export const VenueRecord = {} as VenueRecord
 
-export const VenueRecord_meta_v0 = [{"properties":[{"name":"user_id","value":"string","description":"pg_type.typname: varchar"},{"name":"list_id","value":"string","description":"pg_type.typname: varchar"},{"name":"venue_id","value":"string","description":"pg_type.typname: varchar"},{"name":"instagram","value":"string","description":"pg_type.typname: varchar"},{"name":"only_delivery","value":"boolean","description":"pg_type.typname: bool"},{"name":"updated_at","value":"unknown","description":"pg_type.typname: timestamp"}],"description":"select * from list_venues\n        where user_id = $1\n        and list_id = $2"},{"properties":[{"name":"user_id","value":"string","description":"pg_type.typname: varchar"},{"name":"list_id","value":"string","description":"pg_type.typname: varchar"},{"name":"venue_id","value":"string","description":"pg_type.typname: varchar"},{"name":"venue_name","value":"string","description":"pg_type.typname: text"},{"name":"instagram","value":"string","description":"pg_type.typname: varchar"},{"name":"only_delivery","value":"boolean","description":"pg_type.typname: bool"},{"name":"only_takeaway","value":"boolean","description":"pg_type.typname: bool"},{"name":"updated_at","value":"unknown","description":"pg_type.typname: timestamp"}],"description":"select * from list_venues\n        where user_id = $1\n        and list_id = $2\n        order by venue_id desc"}]
+export const VenueRecord_meta_v0 = [{"properties":[{"name":"user_id","value":"string","description":"pg_type.typname: varchar"},{"name":"list_id","value":"string","description":"pg_type.typname: varchar"},{"name":"venue_id","value":"string","description":"pg_type.typname: varchar"},{"name":"instagram","value":"string","description":"pg_type.typname: varchar"},{"name":"only_delivery","value":"boolean","description":"pg_type.typname: bool"},{"name":"updated_at","value":"unknown","description":"pg_type.typname: timestamp"}],"description":"select * from list_venues\n        where user_id = $1\n        and list_id = $2"},{"properties":[{"name":"user_id","value":"string","description":"pg_type.typname: varchar"},{"name":"list_id","value":"string","description":"pg_type.typname: varchar"},{"name":"venue_id","value":"string","description":"pg_type.typname: varchar"},{"name":"venue_name","value":"string","description":"pg_type.typname: text"},{"name":"instagram","value":"string","description":"pg_type.typname: varchar"},{"name":"only_delivery","value":"boolean","description":"pg_type.typname: bool"},{"name":"only_takeaway","value":"boolean","description":"pg_type.typname: bool"},{"name":"updated_at","value":"unknown","description":"pg_type.typname: timestamp"},{"name":"maybe_closed","value":"boolean","description":"pg_type.typname: bool"}],"description":"select * from list_venues\n        where user_id = $1\n        and list_id = $2\n        order by venue_id desc"},{"properties":[{"name":"user_id","value":"string","description":"pg_type.typname: varchar"},{"name":"list_id","value":"string","description":"pg_type.typname: varchar"},{"name":"venue_id","value":"string","description":"pg_type.typname: varchar"},{"name":"venue_name","value":"string","description":"pg_type.typname: text"},{"name":"instagram","value":"string","description":"pg_type.typname: varchar"},{"name":"only_delivery","value":"boolean","description":"pg_type.typname: bool"},{"name":"only_takeaway","value":"boolean","description":"pg_type.typname: bool"},{"name":"updated_at","value":"unknown","description":"pg_type.typname: timestamp"},{"name":"maybe_closed","value":"boolean","description":"pg_type.typname: bool"}],"description":"update list_venues\n        set instagram = $1,\n        only_delivery = $2,\n        only_takeaway = $3,\n        maybe_closed = $4,\n        updated_at = now()\n        where venue_id = $5\n        returning *"}]

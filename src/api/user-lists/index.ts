@@ -48,3 +48,17 @@ export const updateLists = async (req: AuthorizedRequest, res: Response) => {
         return res.status(500).json({ error: error.message });
     }
 };
+
+export const updateVenueDetails = async (req: AuthorizedRequest, res: Response) => {
+    const { email } = req.user as TokenPayload;
+    const newDetails = req.body;
+    try {
+        const { data, error, responseCode } = await ListsService.updateVenueDetails(email, newDetails);
+        if (error !== null || data === null) {
+            return res.status(responseCode).json({ error: error });
+        }
+        return res.json({ data: data });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};

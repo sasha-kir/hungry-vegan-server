@@ -1,14 +1,14 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { FsqApiList } from 'foursquare-api';
 import { FsqListData } from 'foursquare';
 import { foursquareApi } from '..';
 
-export const getListData = async (accessToken: string, listId: string): Promise<FsqListData> => {
+export const getListData = async (listId: string): Promise<FsqListData> => {
     const url = `lists/${listId}`;
     try {
         const { data } = await foursquareApi.get(url, {
             params: {
-                oauth_token: accessToken,
+                client_id: process.env.FOURSQUARE_CLIENT_ID,
+                client_secret: process.env.FOURSQUARE_CLIENT_SECRET,
                 v: '20200220',
             },
         });

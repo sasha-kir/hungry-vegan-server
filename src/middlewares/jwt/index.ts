@@ -5,5 +5,5 @@ export const checkToken = () => {
         secret: process.env.JWT_KEY,
         algorithms: ['HS256'],
         getToken: (req) => req.header('Authentication'),
-    }).unless({ path: ['/', '/oauth_id', /\/*login/, '/register'] });
+    }).unless({ path: ['/', '/oauth_id', /\/*login/, '/register', /\/public*/] });
 };

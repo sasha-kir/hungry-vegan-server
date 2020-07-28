@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { FsqList, FsqListItem, FsqVenueLocation, FsqVenueDetails } from 'foursquare';
 import { FsqApiListItem, FsqApiVenueLocation } from 'foursquare-api';
 import FoursquareClient from '../../../clients/foursquare';
 import UserQuery from '../../../database/users';
 import * as ListQuery from '../../../database/user-lists';
 import * as VenuesQuery from '../../../database/list-venues';
-import { getAccessTokenFromDb } from '../../../utils/foursquare/accessToken';
+import { VenueRecord } from '../../../generated/db/VenueRecord';
 import { ListResponse } from '..';
 
 const normalizeLocation = (location: FsqApiVenueLocation): FsqVenueLocation => ({
@@ -22,23 +21,29 @@ const normalizeItems = async (
     items: FsqApiListItem[],
 ): Promise<FsqListItem[]> => {
     const sortedData = items.sort((a, b) => b.venue.id.localeCompare(a.venue.id));
-    const dbVenuesData = await VenuesQuery.getListVenues(userId, listId);
-    const normalized = sortedData.map((item, i) => {
-        const { instagram, only_delivery, only_takeaway, maybe_closed, updated_at } = dbVenuesData[
-            i
-        ];
+    const dbData = await VenuesQuery.getListVenues(userId, listId);
+    const dbDataMap = dbData.reduce((result: { [key: string]: VenueRecord }, data) => {
+        const venueId = data['venue_id'];
+        return {
+            ...result,
+            [venueId]: data,
+        };
+    }, {});
+    const normalized = sortedData.map((item) => {
+        const venueId = item.venue.id;
+        const dbDetails = dbDataMap[venueId];
         const location = normalizeLocation(item.venue.location);
         return {
-            id: item.venue.id,
+            id: venueId,
             name: item.venue.name,
             addedAt: item.createdAt,
-            updatedAt: +updated_at,
+            updatedAt: Number(dbDetails['updated_at']),
             location: location,
             coordinates: location.coordinates,
-            instagram: instagram ? String(instagram) : null,
-            onlyDelivery: Boolean(only_delivery),
-            onlyTakeaway: Boolean(only_takeaway),
-            maybeClosed: Boolean(maybe_closed),
+            instagram: dbDetails['instagram'],
+            onlyDelivery: dbDetails['only_delivery'],
+            onlyTakeaway: dbDetails['only_takeaway'],
+            maybeClosed: dbDetails['maybe_closed'],
         };
     });
     return normalized;
@@ -48,10 +53,6 @@ export const getListDetails = async (
     email: string,
     listName: string,
 ): Promise<ListResponse<FsqList>> => {
-    const userToken = await getAccessTokenFromDb(email);
-    if (userToken === null) {
-        return { data: null, error: 'user has no associated foursquare id', responseCode: 400 };
-    }
     const user = await UserQuery.getUserByEmail(email);
     if (user === null) {
         return { data: null, error: 'user data not found', responseCode: 404 };
@@ -64,7 +65,7 @@ export const getListDetails = async (
     const { lat, lon } = listData;
     const listCoords = lat && lon ? { latitude: Number(lat), longitude: Number(lon) } : null;
 
-    const { data, error } = await FoursquareClient.getListData(userToken, listData['list_id']);
+    const { data, error } = await FoursquareClient.getListData(listData['list_id']);
 
     if (error !== null || data === null) {
         return { data: null, error: error, responseCode: 500 };
@@ -74,7 +75,6 @@ export const getListDetails = async (
     if (listItems === undefined) {
         return { data: null, error: 'no list items data found', responseCode: 404 };
     }
-
     await VenuesQuery.saveInitialData(user.id, data.id, listItems);
 
     const normalizedItems = await normalizeItems(user.id, data.id, listItems);

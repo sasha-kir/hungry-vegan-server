@@ -25,6 +25,18 @@ export const getListsData = async (userId: string | number) => {
     return lists;
 };
 
+export const getPublicLists = async () => {
+    const lists = await db.many(sql`
+        select l.*, 
+        (select count(*) as items_count 
+        from list_venues v 
+        where v.list_id = l.list_id)
+        from user_lists l
+        where l.is_public = true
+    `);
+    return lists;
+};
+
 export const getUserList = async (userId: string | number, listName: string) => {
     const list = await db.maybeOne(sql.ListRecord`
         select * from user_lists
@@ -49,7 +61,7 @@ export const updateListLocations = async (userId: string | number, listData: Ful
             const lon = list.coordinates ? list.coordinates.longitude : null;
             return trxConnection.query(sql`
                 update user_lists set location = ${list.location},
-                lat = ${lat}, lon = ${lon}
+                lat = ${lat}, lon = ${lon}, updated_at = now()
                 where list_id = ${list.id} and user_id = ${userId}
             `);
         });

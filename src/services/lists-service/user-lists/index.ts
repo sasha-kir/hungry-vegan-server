@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { FsqList } from 'foursquare';
-import { FullList } from 'internal';
+import { FullList, PublicList } from 'internal';
 import FoursquareClient from '../../../clients/foursquare';
 import { getAccessTokenFromDb } from '../../../utils/foursquare/accessToken';
 import UserQuery from '../../../database/users';
@@ -11,24 +10,25 @@ import { ListResponse } from '..';
 
 type MergedList = FsqList & Partial<ListRecord>;
 
+const constructCoords = (lat: number, lon: number) => ({ latitude: lat, longitude: lon });
+
 const mergeLists = async (userId: string | number, lists: FsqList[]): Promise<MergedList[]> => {
     const sortedData = lists.sort((a, b) => b.id.localeCompare(a.id));
     const dbListData = await ListsQuery.getListsData(userId);
     const merged = sortedData.map((list, i) => {
-        const { location, lat, lon } = dbListData[i];
-        return { ...list, location, lat, lon };
+        const { location, lat, lon, updated_at } = dbListData[i];
+        return { ...list, location, lat, lon, updatedAt: Date.parse(updated_at) };
     });
     return merged;
 };
 
 const normalizeLists = async (lists: MergedList[]): Promise<FullList[]> => {
-    const normalized: FullList[] = lists.map(list => {
+    const normalized: FullList[] = lists.map((list) => {
         const { location, lat, lon, ...basicList } = list;
-        const listLocation = location ? location : '';
-        const listCoords = lat && lon ? { latitude: Number(lat), longitude: Number(lon) } : null;
+        const listCoords = lat && lon ? constructCoords(Number(lat), Number(lon)) : null;
         return {
             ...basicList,
-            location: listLocation,
+            location: location || '',
             coordinates: listCoords,
         };
     });
@@ -70,6 +70,23 @@ export const getLists = async (email: string): Promise<ListResponse<FullList[]>>
     await ListsQuery.saveInitialData(user.id, data);
     const mergedData = await mergeLists(user.id, data);
     const normalizedData = await normalizeLists(mergedData);
+    return { data: normalizedData, error: null, responseCode: 200 };
+};
+
+export const getPublicLists = async (): Promise<ListResponse<PublicList[]>> => {
+    const dbLists = await ListsQuery.getPublicLists();
+    const normalizedData = dbLists.map((list) => {
+        const { lat, lon, updated_at } = list;
+        const listCoords = lat && lon ? constructCoords(Number(lat), Number(lon)) : null;
+        return {
+            id: String(list['list_id']),
+            name: String(list['list_name']),
+            location: String(list['location']),
+            updatedAt: Date.parse(String(updated_at)),
+            coordinates: listCoords,
+            itemsCount: Number(list['items_count']),
+        };
+    });
     return { data: normalizedData, error: null, responseCode: 200 };
 };
 

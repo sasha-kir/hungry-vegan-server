@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { foursquareOAuth } from '..';
 
 export const aquireToken = async (code: string, redirectUrl: string): Promise<string> => {

@@ -1,6 +1,7 @@
 import db, { sql } from '..';
 import { FsqVenueDetails } from 'foursquare';
 import { FsqApiListItem } from 'foursquare-api';
+import { VenueRecord } from '../../generated/db/VenueRecord';
 
 export const saveInitialData = async (
     userId: string | number,
@@ -19,26 +20,40 @@ export const saveInitialData = async (
     return;
 };
 
-export const getListVenues = async (userId: string | number, listId: string) => {
+export const getListVenues = async (
+    userId: string | number,
+    listId: string,
+): Promise<VenueRecord[]> => {
     const venues = await db.many(sql.VenueRecord`
         select * from list_venues
         where user_id = ${userId}
         and list_id = ${listId}
         order by venue_id desc
     `);
-    return venues;
+    return (venues as unknown) as VenueRecord[];
 };
 
 export const updateVenueDetails = async (venueDetails: FsqVenueDetails) => {
-    const venue = await db.maybeOne(sql.VenueRecord`
-        update list_venues
-        set instagram = ${venueDetails.instagram},
-        only_delivery = ${venueDetails.onlyDelivery},
-        only_takeaway = ${venueDetails.onlyTakeaway},
-        maybe_closed = ${venueDetails.maybeClosed},
-        updated_at = now()
-        where venue_id = ${venueDetails.id}
-        returning *
-    `);
+    const venue = await db.transaction(async (trxConnection) => {
+        const venue = await trxConnection.maybeOne(sql.VenueRecord`
+            update list_venues
+            set instagram = ${venueDetails.instagram},
+            only_delivery = ${venueDetails.onlyDelivery},
+            only_takeaway = ${venueDetails.onlyTakeaway},
+            maybe_closed = ${venueDetails.maybeClosed},
+            updated_at = now()
+            where venue_id = ${venueDetails.id}
+            returning *
+        `);
+        if (venue) {
+            await trxConnection.query(sql`
+                update user_lists
+                set updated_at = now()
+                where list_id = ${venue['list_id']}
+        `);
+        }
+        return venue;
+    });
+
     return venue;
 };

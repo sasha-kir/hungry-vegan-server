@@ -40,6 +40,15 @@ export interface FullList extends FsqList {
     location: string;
 }
 
+export interface PublicList {
+    id: string;
+    name: string;
+    location: string;
+    coordinates: ListCoordinates | null;
+    updatedAt: number;
+    itemsCount: number;
+}
+
 export interface LocationMetaData {
     location: string;
     description: string;

@@ -1,8 +1,8 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { AuthorizedRequest, TokenPayload } from 'internal';
 import ListsService from '../../services/lists-service';
 
-export const getLists = async (req: AuthorizedRequest, res: Response) => {
+export const getLists = async (req: AuthorizedRequest, res: Response): Promise<Response> => {
     const { email } = req.user as TokenPayload;
     try {
         const { data, error, responseCode } = await ListsService.getLists(email);
@@ -15,7 +15,19 @@ export const getLists = async (req: AuthorizedRequest, res: Response) => {
     }
 };
 
-export const getListData = async (req: AuthorizedRequest, res: Response) => {
+export const getPublicLists = async (_req: Request, res: Response): Promise<Response> => {
+    try {
+        const { data, error, responseCode } = await ListsService.getPublicLists();
+        if (error !== null || data === null) {
+            return res.status(responseCode).json({ error: error });
+        }
+        return res.json({ data: data });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+export const getListData = async (req: AuthorizedRequest, res: Response): Promise<Response> => {
     const { email } = req.user as TokenPayload;
     const { listName } = req.body;
     if (listName === undefined) {
@@ -32,7 +44,7 @@ export const getListData = async (req: AuthorizedRequest, res: Response) => {
     }
 };
 
-export const updateLists = async (req: AuthorizedRequest, res: Response) => {
+export const updateLists = async (req: AuthorizedRequest, res: Response): Promise<Response> => {
     const { email } = req.user as TokenPayload;
     const { lists } = req.body;
     if (lists === undefined) {
@@ -49,11 +61,17 @@ export const updateLists = async (req: AuthorizedRequest, res: Response) => {
     }
 };
 
-export const updateVenueDetails = async (req: AuthorizedRequest, res: Response) => {
+export const updateVenueDetails = async (
+    req: AuthorizedRequest,
+    res: Response,
+): Promise<Response> => {
     const { email } = req.user as TokenPayload;
     const newDetails = req.body;
     try {
-        const { data, error, responseCode } = await ListsService.updateVenueDetails(email, newDetails);
+        const { data, error, responseCode } = await ListsService.updateVenueDetails(
+            email,
+            newDetails,
+        );
         if (error !== null || data === null) {
             return res.status(responseCode).json({ error: error });
         }

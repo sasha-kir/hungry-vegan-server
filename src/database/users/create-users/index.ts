@@ -1,8 +1,12 @@
 import db, { sql } from '../..';
 
-export const createUserByEmail = async (username: string, email: string, hash: string) => {
-    const userInfo = await db.transaction(async trxConnection => {
-        const userInfo = await trxConnection.query(sql.UserRecord`
+export const createUserByEmail = async (
+    username: string,
+    email: string,
+    hash: string,
+): Promise<UserRecord | null> => {
+    const userInfo = await db.transaction(async (trxConnection) => {
+        const userInfo = await trxConnection.maybeOne<UserRecord>(sql`
                 insert into users (username, email)
                 values (${username}, ${email})
                 returning *
@@ -16,9 +20,12 @@ export const createUserByEmail = async (username: string, email: string, hash: s
     return userInfo;
 };
 
-export const createUserByFoursquareId = async (foursquareId: number, token: string) => {
-    const userInfo = await db.transaction(async trxConnection => {
-        const userInfo = await trxConnection.query(sql.UserRecord`
+export const createUserByFoursquareId = async (
+    foursquareId: number,
+    token: string,
+): Promise<UserRecord | null> => {
+    const userInfo = await db.transaction(async (trxConnection) => {
+        const userInfo = await trxConnection.maybeOne<UserRecord>(sql`
             insert into users (email, foursquare_id)
             values (${foursquareId}, ${foursquareId})
             returning *

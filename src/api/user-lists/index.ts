@@ -27,14 +27,13 @@ export const getPublicLists = async (_req: Request, res: Response): Promise<Resp
     }
 };
 
-export const getListData = async (req: AuthorizedRequest, res: Response): Promise<Response> => {
-    const { email } = req.user as TokenPayload;
-    const { listName } = req.body;
-    if (listName === undefined) {
-        return res.status(400).json({ error: 'no listName was provided' });
+export const getListData = async (req: Request, res: Response): Promise<Response> => {
+    const { owner, listName } = req.body;
+    if (owner === undefined || listName === undefined) {
+        return res.status(400).json({ error: 'some required parameters not provided' });
     }
     try {
-        const { data, error, responseCode } = await ListsService.getListDetails(email, listName);
+        const { data, error, responseCode } = await ListsService.getListDetails(owner, listName);
         if (error !== null || data === null) {
             return res.status(responseCode).json({ error: error });
         }
@@ -65,13 +64,9 @@ export const updateVenueDetails = async (
     req: AuthorizedRequest,
     res: Response,
 ): Promise<Response> => {
-    const { email } = req.user as TokenPayload;
     const newDetails = req.body;
     try {
-        const { data, error, responseCode } = await ListsService.updateVenueDetails(
-            email,
-            newDetails,
-        );
+        const { data, error, responseCode } = await ListsService.updateVenueDetails(newDetails);
         if (error !== null || data === null) {
             return res.status(responseCode).json({ error: error });
         }

@@ -16,7 +16,7 @@ export const checkCredentials = async ({
     if (userRecord === null) {
         return { error: 'wrong username or password', data: null };
     }
-    const loginRecord = await LoginQuery.getPasswordByEmail(userRecord.email.toString());
+    const loginRecord = await LoginQuery.getPasswordByEmail(userRecord.email);
     if (loginRecord === null) {
         return { error: 'wrong username or password', data: null };
     }

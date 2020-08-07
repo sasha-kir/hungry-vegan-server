@@ -18,14 +18,14 @@ export const getAccessTokenFromDb = async (email: string): Promise<string | null
     if (userFromDb === null) {
         return null;
     }
-    const foursquareId = userFromDb.foursquare_id;
+    const foursquareId = userFromDb.foursquareId;
     if (!foursquareId) {
         return null;
     }
-    const tokenFromDb = await TokenQuery.getTokenByFoursquareId(Number(foursquareId));
+    const tokenFromDb = await TokenQuery.getTokenByFoursquareId(foursquareId);
     if (tokenFromDb === null) {
         return null;
     }
-    const encryptedToken = tokenFromDb.access_token;
-    return await decryptToken(encryptedToken.toString());
+    const encryptedToken = tokenFromDb.accessToken;
+    return await decryptToken(encryptedToken);
 };

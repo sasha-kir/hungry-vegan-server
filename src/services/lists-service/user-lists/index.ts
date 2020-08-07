@@ -4,11 +4,10 @@ import FoursquareClient from '../../../clients/foursquare';
 import { getAccessTokenFromDb } from '../../../utils/foursquare/accessToken';
 import UserQuery from '../../../database/users';
 import * as ListsQuery from '../../../database/user-lists';
-import { ListRecord } from '../../../generated/db';
 import YandexClient from '../../../clients/yandex';
 import { ListResponse } from '..';
 
-type MergedList = FsqList & Partial<ListRecord>;
+type MergedList = FsqList & Partial<ListWithOwnerRecord>;
 
 const constructCoords = (lat: number, lon: number) => ({ latitude: lat, longitude: lon });
 
@@ -16,19 +15,27 @@ const mergeLists = async (userId: string | number, lists: FsqList[]): Promise<Me
     const sortedData = lists.sort((a, b) => b.id.localeCompare(a.id));
     const dbListData = await ListsQuery.getListsData(userId);
     const merged = sortedData.map((list, i) => {
-        const { location, lat, lon, updated_at } = dbListData[i];
-        return { ...list, location, lat, lon, updatedAt: Date.parse(updated_at) };
+        const { location, lat, lon, updatedAt, owner } = dbListData[i];
+        return {
+            ...list,
+            location,
+            lat,
+            lon,
+            updatedAt,
+            owner,
+        };
     });
     return merged;
 };
 
 const normalizeLists = async (lists: MergedList[]): Promise<FullList[]> => {
     const normalized: FullList[] = lists.map((list) => {
-        const { location, lat, lon, ...basicList } = list;
+        const { location, lat, lon, owner, ...basicList } = list;
         const listCoords = lat && lon ? constructCoords(Number(lat), Number(lon)) : null;
         return {
             ...basicList,
             location: location || '',
+            owner: owner || '',
             coordinates: listCoords,
         };
     });
@@ -76,15 +83,16 @@ export const getLists = async (email: string): Promise<ListResponse<FullList[]>>
 export const getPublicLists = async (): Promise<ListResponse<PublicList[]>> => {
     const dbLists = await ListsQuery.getPublicLists();
     const normalizedData = dbLists.map((list) => {
-        const { lat, lon, updated_at } = list;
-        const listCoords = lat && lon ? constructCoords(Number(lat), Number(lon)) : null;
+        const { lat, lon } = list;
+        const listCoords = lat && lon ? constructCoords(lat, lon) : null;
         return {
-            id: String(list['list_id']),
-            name: String(list['list_name']),
-            location: String(list['location']),
-            updatedAt: Date.parse(String(updated_at)),
+            id: list.listId,
+            name: list.listName,
+            owner: list.owner,
+            location: list.location || '',
+            updatedAt: list.updatedAt,
             coordinates: listCoords,
-            itemsCount: Number(list['items_count']),
+            itemsCount: list.itemsCount,
         };
     });
     return { data: normalizedData, error: null, responseCode: 200 };

@@ -7,8 +7,9 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
         'user_lists',
         {
             user_id: {
-                type: 'varchar(100)',
+                type: 'int',
                 notNull: true,
+                references: 'users(id)',
             },
             list_id: {
                 type: 'varchar(300)',

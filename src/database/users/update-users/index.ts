@@ -1,8 +1,12 @@
 import db, { sql } from '../..';
 
-export const setUserFoursquareId = async (email: string, foursquareId: number, token: string) => {
+export const setUserFoursquareId = async (
+    email: string,
+    foursquareId: number,
+    token: string,
+): Promise<UserRecord | null> => {
     const userInfo = await db.transaction(async (trxConnection) => {
-        const userInfo = await trxConnection.query(sql.UserRecord`
+        const userInfo = await trxConnection.maybeOne<UserRecord>(sql`
             update users set foursquare_id = ${foursquareId},
             updated_at = now()
             where email = ${email}
@@ -18,9 +22,13 @@ export const setUserFoursquareId = async (email: string, foursquareId: number, t
     return userInfo;
 };
 
-export const updateUserEmail = async (username: string, currentEmail: string, newEmail: string) => {
+export const updateUserEmail = async (
+    username: string,
+    currentEmail: string,
+    newEmail: string,
+): Promise<UserRecord | null> => {
     const userInfo = await db.transaction(async (trxConnection) => {
-        const userInfo = await trxConnection.one(sql.UserRecord`
+        const userInfo = await trxConnection.maybeOne<UserRecord>(sql`
                 update users set email = ${newEmail}, username = ${username},
                 updated_at = now()
                 where email = ${currentEmail}

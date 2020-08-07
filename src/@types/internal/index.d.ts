@@ -38,11 +38,13 @@ export interface ServiceResponse<T> {
 
 export interface FullList extends FsqList {
     location: string;
+    owner: string;
 }
 
 export interface PublicList {
     id: string;
     name: string;
+    owner: string;
     location: string;
     coordinates: ListCoordinates | null;
     updatedAt: number;

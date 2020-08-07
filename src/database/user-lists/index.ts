@@ -2,7 +2,10 @@ import db, { sql } from '..';
 import { FsqList } from 'foursquare';
 import { FullList } from 'internal';
 
-export const saveInitialData = async (userId: string | number, listData: FsqList[]) => {
+export const saveInitialData = async (
+    userId: string | number,
+    listData: FsqList[],
+): Promise<void> => {
     const valuesList = listData.map((list) => {
         const listName = String(list.name).toLowerCase();
         const valuesTuple = sql.join([userId, listName, list.id], sql`, `);
@@ -16,29 +19,34 @@ export const saveInitialData = async (userId: string | number, listData: FsqList
     return;
 };
 
-export const getListsData = async (userId: string | number) => {
-    const lists = await db.many(sql.ListRecord`
-        select * from user_lists
+export const getListsData = async (userId: string | number): Promise<ListWithOwnerRecord[]> => {
+    const lists = await db.many<ListWithOwnerRecord>(sql`
+        select ul.*, u.username as owner from user_lists ul
+        join users u on u.id = ul.user_id
         where user_id = ${userId}
         order by list_id desc
     `);
     return lists;
 };
 
-export const getPublicLists = async () => {
-    const lists = await db.many(sql`
-        select l.*, 
+export const getPublicLists = async (): Promise<PublicListRecord[]> => {
+    const lists = await db.many<PublicListRecord>(sql`
+        select l.*, u.username as owner,
         (select count(*) as items_count 
         from list_venues v 
         where v.list_id = l.list_id)
         from user_lists l
+        join users u on u.id = l.user_id
         where l.is_public = true
     `);
     return lists;
 };
 
-export const getUserList = async (userId: string | number, listName: string) => {
-    const list = await db.maybeOne(sql.ListRecord`
+export const getUserList = async (
+    userId: string | number,
+    listName: string,
+): Promise<ListRecord | null> => {
+    const list = await db.maybeOne<ListRecord>(sql`
         select * from user_lists
         where user_id = ${userId}
         and list_name = ${listName}
@@ -46,16 +54,21 @@ export const getUserList = async (userId: string | number, listName: string) => 
     return list;
 };
 
-export const getListById = async (listId: string) => {
-    const list = await db.maybeOne(sql.ListRecord`
-        select * from user_lists
+export const getListById = async (listId: string): Promise<ListWithOwnerRecord | null> => {
+    const list = await db.maybeOne<ListWithOwnerRecord>(sql`
+        select l.*, u.username as owner 
+        from user_lists l
+        join users u on u.id = l.user_id
         where list_id = ${listId}
     `);
     return list;
 };
 
-export const updateListLocations = async (userId: string | number, listData: FullList[]) => {
-    const trxResult = await db.transaction(async (trxConnection) => {
+export const updateListLocations = async (
+    userId: string | number,
+    listData: FullList[],
+): Promise<void> => {
+    await db.transaction(async (trxConnection) => {
         const updateQueries = listData.map((list) => {
             const lat = list.coordinates ? list.coordinates.latitude : null;
             const lon = list.coordinates ? list.coordinates.longitude : null;
@@ -65,8 +78,6 @@ export const updateListLocations = async (userId: string | number, listData: Ful
                 where list_id = ${list.id} and user_id = ${userId}
             `);
         });
-        const trxResult = await Promise.all(updateQueries);
-        return trxResult;
+        await Promise.all(updateQueries);
     });
-    return trxResult;
 };

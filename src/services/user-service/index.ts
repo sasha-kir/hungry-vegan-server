@@ -3,7 +3,6 @@ import { ServiceResponse } from 'internal';
 import YandexClient from '../../clients/yandex';
 import { generateToken } from '../../utils/jwt';
 import UserQuery from '../../database/users';
-import { UserRecord } from '../../generated/db';
 
 interface UserInfo {
     id: string | number;
@@ -21,7 +20,7 @@ const buildUser = (userInfo: UserRecord): UserInfo => {
         id: userInfo.id,
         username: userInfo.username || '',
         email: userInfo.email,
-        foursquareId: userInfo.foursquare_id || '',
+        foursquareId: userInfo.foursquareId || '',
     };
 };
 

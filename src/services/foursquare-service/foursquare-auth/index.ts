@@ -28,7 +28,7 @@ export const registerUser = async ({
     }
     const userFromDb = await UserQuery.getUserByFoursquareId(foursquareId);
     if (userFromDb !== null) {
-        const isEmailValid = userFromDb.email !== String(userFromDb.foursquare_id);
+        const isEmailValid = userFromDb.email !== userFromDb.foursquareId?.toString();
         const token = generateToken(userFromDb.email);
         return { data: token, isEmailValid, error: null };
     }

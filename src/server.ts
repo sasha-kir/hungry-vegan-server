@@ -27,7 +27,8 @@ app.post('/foursquare_connect', foursquareAuth.foursquareConnect);
 
 app.get('/user_lists', userLists.getLists);
 app.get('/public_lists', userLists.getPublicLists);
-app.post('/list_data', userLists.getListData);
+app.post('/public_list_data', userLists.getListData);
+
 app.post('/update_lists', userLists.updateLists);
 app.post('/update_venue_details', userLists.updateVenueDetails);
 

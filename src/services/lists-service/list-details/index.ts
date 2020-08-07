@@ -4,7 +4,6 @@ import FoursquareClient from '../../../clients/foursquare';
 import UserQuery from '../../../database/users';
 import * as ListQuery from '../../../database/user-lists';
 import * as VenuesQuery from '../../../database/list-venues';
-import { VenueRecord } from '../../../generated/db/VenueRecord';
 import { ListResponse } from '..';
 
 const normalizeLocation = (location: FsqApiVenueLocation): FsqVenueLocation => ({
@@ -23,7 +22,7 @@ const normalizeItems = async (
     const sortedData = items.sort((a, b) => b.venue.id.localeCompare(a.venue.id));
     const dbData = await VenuesQuery.getListVenues(userId, listId);
     const dbDataMap = dbData.reduce((result: { [key: string]: VenueRecord }, data) => {
-        const venueId = data['venue_id'];
+        const venueId = data.venueId;
         return {
             ...result,
             [venueId]: data,
@@ -37,23 +36,23 @@ const normalizeItems = async (
             id: venueId,
             name: item.venue.name,
             addedAt: item.createdAt,
-            updatedAt: Number(dbDetails['updated_at']),
             location: location,
             coordinates: location.coordinates,
-            instagram: dbDetails['instagram'],
-            onlyDelivery: dbDetails['only_delivery'],
-            onlyTakeaway: dbDetails['only_takeaway'],
-            maybeClosed: dbDetails['maybe_closed'],
+            updatedAt: dbDetails.updatedAt,
+            instagram: dbDetails.instagram,
+            onlyDelivery: dbDetails.onlyDelivery,
+            onlyTakeaway: dbDetails.onlyTakeaway,
+            maybeClosed: dbDetails.maybeClosed,
         };
     });
     return normalized;
 };
 
 export const getListDetails = async (
-    email: string,
+    username: string,
     listName: string,
 ): Promise<ListResponse<FsqList>> => {
-    const user = await UserQuery.getUserByEmail(email);
+    const user = await UserQuery.getUserByUsername(username);
     if (user === null) {
         return { data: null, error: 'user data not found', responseCode: 404 };
     }
@@ -63,9 +62,9 @@ export const getListDetails = async (
     }
 
     const { lat, lon } = listData;
-    const listCoords = lat && lon ? { latitude: Number(lat), longitude: Number(lon) } : null;
+    const listCoords = lat && lon ? { latitude: lat, longitude: lon } : null;
 
-    const { data, error } = await FoursquareClient.getListData(listData['list_id']);
+    const { data, error } = await FoursquareClient.getListData(listData.listId);
 
     if (error !== null || data === null) {
         return { data: null, error: error, responseCode: 500 };
@@ -91,16 +90,15 @@ export const getListDetails = async (
 };
 
 export const updateVenueDetails = async (
-    email: string,
     newDetails: FsqVenueDetails,
 ): Promise<ListResponse<FsqList>> => {
     const updatedVenue = await VenuesQuery.updateVenueDetails(newDetails);
     if (!updatedVenue) {
         return { data: null, error: 'venue update unsuccessful', responseCode: 500 };
     }
-    const listData = await ListQuery.getListById(String(updatedVenue['list_id']));
+    const listData = await ListQuery.getListById(updatedVenue.listId);
     if (!listData) {
-        return { data: null, error: 'list dat not found', responseCode: 404 };
+        return { data: null, error: 'list data not found', responseCode: 404 };
     }
-    return await getListDetails(email, String(listData['list_name']));
+    return await getListDetails(listData.owner, listData.listName);
 };

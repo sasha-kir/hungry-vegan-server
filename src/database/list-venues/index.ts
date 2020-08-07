@@ -1,13 +1,12 @@
 import db, { sql } from '..';
 import { FsqVenueDetails } from 'foursquare';
 import { FsqApiListItem } from 'foursquare-api';
-import { VenueRecord } from '../../generated/db/VenueRecord';
 
 export const saveInitialData = async (
     userId: string | number,
     listId: string,
     itemsData: FsqApiListItem[],
-) => {
+): Promise<void> => {
     const valuesList = itemsData.map((item) => {
         const valuesTuple = sql.join([userId, listId, item.venue.id, item.venue.name], sql`, `);
         return sql`(${valuesTuple})`;
@@ -24,18 +23,20 @@ export const getListVenues = async (
     userId: string | number,
     listId: string,
 ): Promise<VenueRecord[]> => {
-    const venues = await db.many(sql.VenueRecord`
+    const venues = await db.many<VenueRecord>(sql`
         select * from list_venues
         where user_id = ${userId}
         and list_id = ${listId}
         order by venue_id desc
     `);
-    return (venues as unknown) as VenueRecord[];
+    return venues;
 };
 
-export const updateVenueDetails = async (venueDetails: FsqVenueDetails) => {
+export const updateVenueDetails = async (
+    venueDetails: FsqVenueDetails,
+): Promise<VenueRecord | null> => {
     const venue = await db.transaction(async (trxConnection) => {
-        const venue = await trxConnection.maybeOne(sql.VenueRecord`
+        const venue = await trxConnection.maybeOne<VenueRecord>(sql`
             update list_venues
             set instagram = ${venueDetails.instagram},
             only_delivery = ${venueDetails.onlyDelivery},
@@ -49,7 +50,7 @@ export const updateVenueDetails = async (venueDetails: FsqVenueDetails) => {
             await trxConnection.query(sql`
                 update user_lists
                 set updated_at = now()
-                where list_id = ${venue['list_id']}
+                where list_id = ${venue.listId}
         `);
         }
         return venue;

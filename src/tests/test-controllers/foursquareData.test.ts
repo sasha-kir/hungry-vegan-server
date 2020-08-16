@@ -1,4 +1,5 @@
 import request from 'supertest';
+import { FsqApiList } from 'foursquare-api';
 import app, { server } from '../../server';
 import { prepareTestUser } from '../setup';
 import FoursquareClient from '../../clients/foursquare';
@@ -7,7 +8,7 @@ import * as TokenUtils from '../../utils/foursquare/accessToken';
 let user;
 
 describe('Foursquare data endpoints', () => {
-    beforeAll(async done => {
+    beforeAll(async (done) => {
         user = await prepareTestUser('fsq-data');
         done();
     });
@@ -21,6 +22,7 @@ describe('Foursquare data endpoints', () => {
         const testData = [
             {
                 id: '1',
+                name: 'test',
                 itemsCount: 1,
             },
         ];
@@ -31,9 +33,7 @@ describe('Foursquare data endpoints', () => {
             error: null,
             data: testData,
         });
-        const response = await request(app)
-            .get('/user_lists')
-            .set('Authentication', user.token);
+        const response = await request(app).get('/user_lists').set('Authentication', user.token);
         expect(mockGetToken).toHaveBeenCalled();
         expect(mockGetLists).toHaveBeenCalledWith(testToken);
         expect(response.ok).toBeTrue();
@@ -42,9 +42,7 @@ describe('Foursquare data endpoints', () => {
     });
 
     it('should not fetch foursquare lists without foursquareId', async () => {
-        const response = await request(app)
-            .get('/user_lists')
-            .set('Authentication', user.token);
+        const response = await request(app).get('/user_lists').set('Authentication', user.token);
         expect(response.badRequest).toBeTrue();
         expect(response.body).toHaveProperty('error');
     });
@@ -58,9 +56,16 @@ describe('Foursquare data endpoints', () => {
     it('should fetch foursquare list data', async () => {
         const listId = 1;
         const testToken = '12345';
-        const testData = {
+        const testData: FsqApiList = {
             id: '1',
-            itemsCount: 1,
+            url: 'test',
+            canonicalUrl: 'test',
+            name: 'test',
+            createdAt: 1,
+            updatedAt: 1,
+            listItems: {
+                count: 0,
+            },
         };
         const mockGetToken = jest.spyOn(TokenUtils, 'getAccessTokenFromDb');
         mockGetToken.mockResolvedValueOnce(testToken);
@@ -90,9 +95,7 @@ describe('Foursquare data endpoints', () => {
     });
 
     it('should not fetch list data without authentication', async () => {
-        const response = await request(app)
-            .post('/list_data')
-            .send({ listId: 1 });
+        const response = await request(app).post('/list_data').send({ listId: 1 });
         expect(response.unauthorized).toBeTrue();
         expect(response.body).toHaveProperty('error');
     });

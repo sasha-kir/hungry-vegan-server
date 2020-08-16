@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { FsqApiUser, FsqApiList } from 'foursquare-api';
 import { FsqUserData, FsqUserListsData, FsqUser, FsqList } from 'foursquare';
 import { foursquareApi } from '..';
@@ -48,7 +47,7 @@ export const getUserLists = async (accessToken: string): Promise<FsqUserListsDat
             },
         });
         const userLists: FsqApiList[] = data.response.lists.items as FsqApiList[];
-        const listsInfo: FsqList[] = userLists.map(list => normalizeList(list));
+        const listsInfo: FsqList[] = userLists.map((list) => normalizeList(list));
         return { data: listsInfo, error: null };
     } catch (error) {
         return { data: null, error: error.message };

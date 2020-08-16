@@ -26,6 +26,7 @@ export interface FsqListItem extends FsqVenueDetails {
 
 export interface FsqList extends AtLeast<FsqApiList, 'id' | 'name'> {
     itemsCount: number;
+    owner: string;
     coordinates: ListCoordinates | null;
     items?: FsqListItem[];
 }

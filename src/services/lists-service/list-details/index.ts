@@ -5,6 +5,7 @@ import UserQuery from '../../../database/users';
 import * as ListQuery from '../../../database/user-lists';
 import * as VenuesQuery from '../../../database/list-venues';
 import { ListResponse } from '..';
+import NodeCache from 'node-cache';
 
 const normalizeLocation = (location: FsqApiVenueLocation): FsqVenueLocation => ({
     address: location.address,
@@ -51,6 +52,7 @@ const normalizeItems = async (
 export const getListDetails = async (
     username: string,
     listName: string,
+    cache: NodeCache,
 ): Promise<ListResponse<FsqList>> => {
     const user = await UserQuery.getUserByUsername(username);
     if (user === null) {
@@ -80,17 +82,20 @@ export const getListDetails = async (
 
     const list: FsqList = {
         id: data.id,
-        name: data.name,
+        owner: username,
+        name: data.name.toLowerCase(),
         coordinates: listCoords,
         itemsCount: data.listItems.count,
         items: normalizedItems,
     };
 
+    cache.set(`listDetails-${username}-${listName}`, list, 60 * 60);
     return { data: list, error: null, responseCode: 200 };
 };
 
 export const updateVenueDetails = async (
     newDetails: FsqVenueDetails,
+    cache: NodeCache,
 ): Promise<ListResponse<FsqList>> => {
     const updatedVenue = await VenuesQuery.updateVenueDetails(newDetails);
     if (!updatedVenue) {
@@ -100,5 +105,5 @@ export const updateVenueDetails = async (
     if (!listData) {
         return { data: null, error: 'list data not found', responseCode: 404 };
     }
-    return await getListDetails(listData.owner, listData.listName);
+    return await getListDetails(listData.owner, listData.listName, cache);
 };

@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 import { LoginPayload, RegisterPayload, ServiceResponse } from 'internal';
-import { generateToken } from '../../utils/jwt';
-import UserQuery from '../../database/users';
-import * as LoginQuery from '../../database/login';
+import { generateToken } from '../../utils/jwt/index';
+import UserQuery from '../../database/users/index';
+import * as LoginQuery from '../../database/login/index';
 
 const saltRounds = 10;
 

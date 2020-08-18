@@ -1,11 +1,11 @@
+import NodeCache from 'node-cache';
 import { FsqList, FsqListItem, FsqVenueLocation, FsqVenueDetails } from 'foursquare';
 import { FsqApiListItem, FsqApiVenueLocation } from 'foursquare-api';
-import FoursquareClient from '../../../clients/foursquare';
-import UserQuery from '../../../database/users';
-import * as ListQuery from '../../../database/user-lists';
-import * as VenuesQuery from '../../../database/list-venues';
-import { ListResponse } from '..';
-import NodeCache from 'node-cache';
+import FoursquareClient from '../../../clients/foursquare/index';
+import UserQuery from '../../../database/users/index';
+import * as ListQuery from '../../../database/user-lists/index';
+import * as VenuesQuery from '../../../database/list-venues/index';
+import { ListResponse } from '../index';
 
 const normalizeLocation = (location: FsqApiVenueLocation): FsqVenueLocation => ({
     address: location.address,

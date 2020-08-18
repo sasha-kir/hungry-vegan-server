@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-import * as Geocoder from './geocoder';
+import * as Geocoder from './geocoder/index';
 
 export const geocoderApi = axios.create({
     baseURL: 'https://geocode-maps.yandex.ru/1.x/',
 });
 
-geocoderApi.interceptors.request.use(request => {
+geocoderApi.interceptors.request.use((request) => {
     request.params = {
         ...request.params,
         apikey: process.env.YANDEX_API_KEY,

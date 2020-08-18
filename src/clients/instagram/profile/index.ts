@@ -1,5 +1,5 @@
 import { InstagramPost } from 'instagram';
-import { instagramApi } from '..';
+import { instagramApi } from '../index';
 
 interface LastPostResponse {
     data: InstagramPost | null;

@@ -1,6 +1,6 @@
 import { FsqApiList } from 'foursquare-api';
 import { FsqListData } from 'foursquare';
-import { foursquareApi } from '..';
+import { foursquareApi } from '../index';
 
 export const getListData = async (listId: string): Promise<FsqListData> => {
     const url = `lists/${listId}`;

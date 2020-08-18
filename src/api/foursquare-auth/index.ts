@@ -1,13 +1,12 @@
 import { Request, Response } from 'express';
-import { AuthorizedRequest, TokenPayload } from 'internal';
-import { OAuthPayload } from 'internal';
-import FoursquareService from '../../services/foursquare-service';
+import { AuthorizedRequest, TokenPayload, OAuthPayload } from 'internal';
+import FoursquareService from '../../services/foursquare-service/index';
 
-export const getClientID = (_req: Request, res: Response) => {
+export const getClientID = (_req: Request, res: Response): Response => {
     return res.json({ clientId: process.env.FOURSQUARE_CLIENT_ID });
 };
 
-export const foursquareLogin = async (req: Request, res: Response) => {
+export const foursquareLogin = async (req: Request, res: Response): Promise<Response> => {
     const { code, redirectUrl }: OAuthPayload = req.body;
     if (code === undefined || redirectUrl === undefined) {
         return res.status(400).json({ error: 'missing required params' });
@@ -26,7 +25,10 @@ export const foursquareLogin = async (req: Request, res: Response) => {
     }
 };
 
-export const foursquareConnect = async (req: AuthorizedRequest, res: Response) => {
+export const foursquareConnect = async (
+    req: AuthorizedRequest,
+    res: Response,
+): Promise<Response> => {
     const { email } = req.user as TokenPayload;
     const { code, redirectUrl }: OAuthPayload = req.body;
     if (code === undefined || redirectUrl === undefined) {

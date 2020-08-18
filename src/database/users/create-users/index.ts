@@ -1,4 +1,4 @@
-import db, { sql } from '../..';
+import db, { sql } from '../../index';
 
 export const createUserByEmail = async (
     username: string,

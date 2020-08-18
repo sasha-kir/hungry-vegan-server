@@ -17,7 +17,7 @@ const config: { [key: string]: Config } = {
     },
     production: {
         database: process.env.DATABASE_URL,
-        port: 5000,
+        port: 9001,
     },
 };
 

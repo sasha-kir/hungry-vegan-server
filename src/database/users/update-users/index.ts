@@ -1,4 +1,4 @@
-import db, { sql } from '../..';
+import db, { sql } from '../../index';
 
 export const setUserFoursquareId = async (
     email: string,

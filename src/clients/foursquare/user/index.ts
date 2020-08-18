@@ -1,6 +1,6 @@
 import { FsqApiUser, FsqApiList } from 'foursquare-api';
 import { FsqUserData, FsqUserListsData, FsqUser, FsqList } from 'foursquare';
-import { foursquareApi } from '..';
+import { foursquareApi } from '../index';
 
 const normalizeUser = (fullUser: FsqApiUser): FsqUser => ({
     id: fullUser.id,

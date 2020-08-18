@@ -1,4 +1,4 @@
-import db, { sql } from '..';
+import db, { sql } from '../index';
 import { FsqVenueDetails } from 'foursquare';
 import { FsqApiListItem } from 'foursquare-api';
 

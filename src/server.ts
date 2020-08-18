@@ -2,14 +2,15 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import NodeCache from 'node-cache';
-import config from './config';
-import { checkToken } from './middlewares/jwt';
-import { handleUnauthorized } from './middlewares/errorHandler';
 
-import * as foursquareAuth from './api/foursquare-auth';
-import * as userLists from './api/user-lists';
-import * as user from './api/user-data';
-import * as auth from './api/authorization';
+import config from './config/index';
+import { checkToken } from './middlewares/jwt/index';
+import { handleUnauthorized } from './middlewares/errorHandler/index';
+
+import * as foursquareAuth from './api/foursquare-auth/index';
+import * as userLists from './api/user-lists/index';
+import * as user from './api/user-data/index';
+import * as auth from './api/authorization/index';
 
 const env = process.env.NODE_ENV || 'development';
 

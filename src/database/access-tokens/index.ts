@@ -1,4 +1,4 @@
-import db, { sql } from '..';
+import db, { sql } from '../index';
 
 export const getTokenByFoursquareId = async (foursquareId: number): Promise<TokenRecord | null> => {
     const tokenRecord = await db.maybeOne<TokenRecord>(sql`

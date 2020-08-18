@@ -1,4 +1,4 @@
-import db, { sql } from '../..';
+import db, { sql } from '../../index';
 
 export const getUserByUsername = async (username: string): Promise<UserRecord | null> => {
     const userRecord = await db.maybeOne<UserRecord>(sql`

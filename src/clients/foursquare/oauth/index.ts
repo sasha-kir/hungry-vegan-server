@@ -1,4 +1,4 @@
-import { foursquareOAuth } from '..';
+import { foursquareOAuth } from '../index';
 
 export const aquireToken = async (code: string, redirectUrl: string): Promise<string> => {
     const url = 'access_token';

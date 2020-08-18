@@ -1,7 +1,7 @@
 import initCryptus from 'cryptus';
 
-import UserQuery from '../../database/users';
-import * as TokenQuery from '../../database/access-tokens';
+import UserQuery from '../../database/users/index';
+import * as TokenQuery from '../../database/access-tokens/index';
 
 const cryptus = initCryptus.promiseApi();
 

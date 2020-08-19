@@ -1,8 +1,8 @@
 import { ListCoordinates } from 'foursquare';
 import { ServiceResponse } from 'internal';
-import YandexClient from '../../clients/yandex/index';
-import { generateToken } from '../../utils/jwt/index';
-import UserQuery from '../../database/users/index';
+import YandexClient from '../../clients/yandex';
+import { generateToken } from '../../utils/jwt';
+import UserQuery from '../../database/users';
 
 interface UserInfo {
     id: string | number;

@@ -1,6 +1,6 @@
 import slonikDefault, * as slonikNamespace from 'slonik';
 import { createFieldNameTransformationInterceptor } from 'slonik-interceptor-field-name-transformation';
-import config from '../config/index';
+import config from '../config';
 
 const env = process.env.NODE_ENV || 'development';
 

@@ -1,7 +1,7 @@
 import { GeoObject } from 'yandex-api';
 import { ListCoordinates } from 'foursquare';
 import { LocationMetaData } from 'internal';
-import { geocoderApi } from '../index';
+import { geocoderApi } from '..';
 
 interface GeocoderResponse {
     data: LocationMetaData | null;

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { AuthorizedRequest, TokenPayload } from 'internal';
 import NodeCache from 'node-cache';
-import ListsService from '../../services/lists-service/index';
+import ListsService from '../../services/lists-service';
 
 export const getLists = async (
     req: AuthorizedRequest,

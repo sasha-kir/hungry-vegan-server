@@ -1,4 +1,4 @@
-import db, { sql } from '../index';
+import db, { sql } from '..';
 
 export const getPasswordByEmail = async (email: string): Promise<LoginRecord | null> => {
     const loginRecord = await db.maybeOne<LoginRecord>(sql`

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import * as Geocoder from './geocoder/index';
+import * as Geocoder from './geocoder';
 
 export const geocoderApi = axios.create({
     baseURL: 'https://geocode-maps.yandex.ru/1.x/',

@@ -1,8 +1,8 @@
-import FoursquareClient from '../../../clients/foursquare/index';
+import FoursquareClient from '../../../clients/foursquare';
 import { OAuthPayload, ServiceResponse } from 'internal';
-import { generateToken } from '../../../utils/jwt/index';
+import { generateToken } from '../../../utils/jwt';
 import { encryptToken, getAccessTokenFromDb } from '../../../utils/foursquare/accessToken';
-import UserQuery from '../../../database/users/index';
+import UserQuery from '../../../database/users';
 
 interface FsqAuthResponse extends ServiceResponse<string> {
     isEmailValid?: boolean;

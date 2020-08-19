@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-import * as OAuth from './oauth/index';
-import * as User from './user/index';
-import * as List from './list/index';
+import * as OAuth from './oauth';
+import * as User from './user';
+import * as List from './list';
 
 export const foursquareOAuth = axios.create({
     baseURL: 'https://foursquare.com/oauth2/',

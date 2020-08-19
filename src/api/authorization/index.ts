@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { CustomRequest, LoginPayload, RegisterPayload } from 'internal';
-import * as AuthService from '../../services/auth-service/index';
+import * as AuthService from '../../services/auth-service';
 
 export const handleLogin = async (
     req: CustomRequest<LoginPayload>,

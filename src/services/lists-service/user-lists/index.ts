@@ -1,11 +1,11 @@
 import { FsqList } from 'foursquare';
 import { FullList, PublicList } from 'internal';
-import FoursquareClient from '../../../clients/foursquare/index';
+import FoursquareClient from '../../../clients/foursquare';
 import { getAccessTokenFromDb } from '../../../utils/foursquare/accessToken';
-import UserQuery from '../../../database/users/index';
-import * as ListsQuery from '../../../database/user-lists/index';
-import YandexClient from '../../../clients/yandex/index';
-import { ListResponse } from '../index';
+import UserQuery from '../../../database/users';
+import * as ListsQuery from '../../../database/user-lists';
+import YandexClient from '../../../clients/yandex';
+import { ListResponse } from '..';
 
 type MergedList = FsqList & Partial<ListWithOwnerRecord>;
 

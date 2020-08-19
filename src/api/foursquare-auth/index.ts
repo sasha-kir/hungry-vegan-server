@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { AuthorizedRequest, TokenPayload, OAuthPayload } from 'internal';
-import FoursquareService from '../../services/foursquare-service/index';
+import FoursquareService from '../../services/foursquare-service';
 
 export const getClientID = (_req: Request, res: Response): Response => {
     return res.json({ clientId: process.env.FOURSQUARE_CLIENT_ID });

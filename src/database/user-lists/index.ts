@@ -1,4 +1,4 @@
-import db, { sql } from '../index';
+import db, { sql } from '..';
 import { FsqList } from 'foursquare';
 import { FullList } from 'internal';
 

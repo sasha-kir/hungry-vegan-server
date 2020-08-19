@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import NodeCache from 'node-cache';
 import { AuthorizedRequest, TokenPayload } from 'internal';
-import * as UserService from '../../services/user-service/index';
+import * as UserService from '../../services/user-service';
 
 export const getUserData = async (
     req: AuthorizedRequest,

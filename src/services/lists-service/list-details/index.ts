@@ -29,8 +29,10 @@ const normalizeItems = async (
             [venueId]: data,
         };
     }, {});
+    const activeVenues: string[] = [];
     const normalized = sortedData.map((item) => {
         const venueId = item.venue.id;
+        activeVenues.push(venueId);
         const dbDetails = dbDataMap[venueId];
         const location = normalizeLocation(item.venue.location);
         return {
@@ -46,6 +48,13 @@ const normalizeItems = async (
             maybeClosed: dbDetails.maybeClosed,
         };
     });
+    const archivedVenues = Object.keys(dbDataMap).filter(
+        (venueId) => !activeVenues.includes(venueId),
+    );
+    console.log(archivedVenues);
+    if (archivedVenues.length) {
+        VenuesQuery.deleteListVenues(userId, archivedVenues);
+    }
     return normalized;
 };
 

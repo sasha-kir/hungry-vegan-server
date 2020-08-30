@@ -32,6 +32,19 @@ export const getListVenues = async (
     return venues;
 };
 
+export const deleteListVenues = async (
+    userId: string | number,
+    venueIds: string[],
+): Promise<void> => {
+    const venues = sql.join(venueIds, sql`, `);
+    await db.query(sql`
+        delete from list_venues
+        where user_id = ${userId}
+        and venue_id in (${venues})
+    `);
+    return;
+};
+
 export const updateVenueDetails = async (
     venueDetails: FsqVenueDetails,
 ): Promise<VenueRecord | null> => {

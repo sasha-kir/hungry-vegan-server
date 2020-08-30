@@ -38,6 +38,7 @@ app.post('/public_list_data', (req, res) => userLists.getListData(req, res, cach
 
 app.post('/update_lists', (req, res) => userLists.updateLists(req, res, cache));
 app.post('/update_venue_details', (req, res) => userLists.updateVenueDetails(req, res, cache));
+app.post('/invalidate_list_data', (req, res) => userLists.invalidateListData(req, res, cache));
 
 app.get('/user_data', (req, res) => user.getUserData(req, res, cache));
 app.post('/user_location', user.getUserLocation);

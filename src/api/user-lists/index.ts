@@ -118,3 +118,17 @@ export const updateVenueDetails = async (
         return res.status(500).json({ error: error.message });
     }
 };
+
+export const invalidateListData = async (
+    req: AuthorizedRequest,
+    res: Response,
+    cache: NodeCache,
+): Promise<Response> => {
+    const { owner, listName } = req.body;
+    if (owner === undefined || listName === undefined) {
+        return res.status(400).json({ error: 'some required parameters not provided' });
+    }
+    const cacheKey = `listDetails-${owner}-${listName}`;
+    cache.del(cacheKey);
+    return res.json({ info: true });
+};

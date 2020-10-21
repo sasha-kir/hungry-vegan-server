@@ -34,7 +34,7 @@
         "jsonwebtoken": "8.5.1",
         "node-cache": "5.1.2",
         "pg-native": "3.0.0",
-        "slonik": "22.7.0",
+        "slonik": "22.7.1",
         "slonik-interceptor-field-name-transformation": "1.5.3"
     },
     "devDependencies": {

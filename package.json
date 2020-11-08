@@ -73,7 +73,7 @@
         "prettier": "2.1.2",
         "roarr": "2.15.4",
         "source-map-support": "0.5.19",
-        "supertest": "5.0.0",
+        "supertest": "6.0.1",
         "ts-jest": "26.4.4",
         "ts-node": "9.0.0",
         "ts-node-dev": "1.0.0",

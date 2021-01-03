@@ -71,7 +71,7 @@
         "node-pg-migrate": "5.9.0",
         "pg": "8.5.1",
         "prettier": "2.2.1",
-        "roarr": "3.2.0",
+        "roarr": "3.3.0",
         "source-map-support": "0.5.19",
         "supertest": "6.0.1",
         "ts-jest": "26.4.4",

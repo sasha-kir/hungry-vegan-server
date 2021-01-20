@@ -50,7 +50,7 @@
         "@types/jsdom": "16.2.6",
         "@types/jsonwebtoken": "8.5.0",
         "@types/node": "13.13.40",
-        "@types/pg": "7.14.8",
+        "@types/pg": "7.14.9",
         "@types/prettier": "2.1.6",
         "@types/roarr": "2.14.2",
         "@types/slonik": "22.1.4",

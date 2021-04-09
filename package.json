@@ -39,7 +39,7 @@
     },
     "devDependencies": {
         "@slonik/typegen": "0.8.0",
-        "@types/bcrypt": "3.0.0",
+        "@types/bcrypt": "3.0.1",
         "@types/body-parser": "1.19.0",
         "@types/cors": "2.8.10",
         "@types/eslint": "7.2.8",

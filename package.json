@@ -49,7 +49,7 @@
         "@types/jest": "26.0.22",
         "@types/jsdom": "16.2.10",
         "@types/jsonwebtoken": "8.5.1",
-        "@types/node": "13.13.49",
+        "@types/node": "13.13.50",
         "@types/pg": "7.14.11",
         "@types/prettier": "2.2.3",
         "@types/roarr": "2.14.2",

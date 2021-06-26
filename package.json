@@ -70,7 +70,7 @@
         "lint-staged": "10.5.4",
         "node-pg-migrate": "5.9.0",
         "pg": "8.6.0",
-        "prettier": "2.3.1",
+        "prettier": "2.3.2",
         "roarr": "4.2.5",
         "source-map-support": "0.5.19",
         "supertest": "6.1.3",

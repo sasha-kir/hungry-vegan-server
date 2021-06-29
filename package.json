@@ -38,7 +38,7 @@
         "slonik-interceptor-field-name-transformation": "1.5.3"
     },
     "devDependencies": {
-        "@slonik/typegen": "0.9.3",
+        "@slonik/typegen": "0.9.4",
         "@types/bcrypt": "3.0.1",
         "@types/body-parser": "1.19.0",
         "@types/cors": "2.8.10",

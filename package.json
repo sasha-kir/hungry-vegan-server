@@ -48,7 +48,7 @@
         "@types/express-jwt": "6.0.2",
         "@types/jest": "26.0.24",
         "@types/jsdom": "16.2.13",
-        "@types/jsonwebtoken": "8.5.3",
+        "@types/jsonwebtoken": "8.5.4",
         "@types/node": "13.13.52",
         "@types/pg": "7.14.11",
         "@types/prettier": "2.3.1",
